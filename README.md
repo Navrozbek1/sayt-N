@@ -1,0 +1,2 @@
+# sayt-N
+Foydalanish uchun !
