@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="uz">
+<html lang="uz" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,1040 +8,274 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Outfit:wght@700;800;900&display=swap" rel="stylesheet">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        :root {
-            --primary: #22c55e;
-            --secondary: #16a34a;
-            --accent: #4ade80;
-            --bg-dark: #ffffff;
-            --bg-darker: #f4f7f6;
-            --card-bg: #ffffff;
-            --text-primary: #1a2332;
-            --text-secondary: #556170;
-            --text-muted: #8c959f;
-            --border: #dde3e9;
-            --shadow: rgba(31, 35, 40, 0.08);
-            --shadow-lg: rgba(31, 35, 40, 0.14);
-            --shadow-green: rgba(34, 197, 94, 0.22);
-            --gradient-primary: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
-        }
-
-        [data-theme="dark"] {
-            --bg-dark: #0d1117;
-            --bg-darker: #010409;
-            --card-bg: #161b22;
-            --text-primary: #e8f0fe;
-            --text-secondary: #8b949e;
-            --text-muted: #6e7681;
-            --border: #2d333b;
-            --shadow: rgba(0,0,0,0.28);
-            --shadow-lg: rgba(0,0,0,0.4);
-        }
-
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: var(--bg-darker);
-            color: var(--text-primary);
-            line-height: 1.65;
-            overflow-x: hidden;
-        }
-
-        /* ─── BACKGROUND ─── */
-        .bg-wrap {
-            position: fixed;
-            inset: 0;
-            z-index: -2;
-            background: var(--bg-darker);
-        }
-        .bg-wrap::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background:
-                radial-gradient(circle at 15% 20%, rgba(34,197,94,.07) 0%, transparent 50%),
-                radial-gradient(circle at 85% 75%, rgba(22,163,74,.07) 0%, transparent 50%);
-            animation: glowPulse 18s ease infinite alternate;
-        }
-        .bg-wrap::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background-image: radial-gradient(circle, rgba(34,197,94,.045) 1px, transparent 1px);
-            background-size: 36px 36px;
-        }
-        @keyframes glowPulse { from { opacity:.3; } to { opacity:.7; } }
-
-        /* ─── ANIMATIONS ─── */
-        @keyframes fadeInUp {
-            from { opacity:0; transform:translateY(28px); }
-            to   { opacity:1; transform:translateY(0); }
-        }
-        @keyframes pulseBorder {
-            0%,100% { box-shadow:0 0 0 0 rgba(34,197,94,.3); }
-            50%      { box-shadow:0 0 0 10px rgba(34,197,94,0); }
-        }
-        @keyframes dotBlink {
-            0%,100% { opacity:1; }
-            50%      { opacity:.25; }
-        }
-
-        /* ─── NAV ─── */
-        nav {
-            position: fixed;
-            top: 0;
-            width: 100%;
-            background: rgba(255,255,255,.82);
-            backdrop-filter: blur(14px);
-            -webkit-backdrop-filter: blur(14px);
-            padding: .9rem 5%;
-            z-index: 1000;
-            border-bottom: 1px solid var(--border);
-            transition: all .3s ease;
-        }
-        [data-theme="dark"] nav {
-            background: rgba(22,27,34,.85);
-        }
-        nav.scrolled {
-            box-shadow: 0 4px 24px var(--shadow);
-        }
-        nav .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .logo {
-            font-family: 'Outfit', sans-serif;
-            font-size: 1.75rem;
-            font-weight: 900;
-            background: var(--gradient-primary);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            cursor: pointer;
-            transition: transform .3s;
-        }
-        .logo:hover { transform: translateY(-2px); }
-
-        .nav-menu {
-            display: flex;
-            gap: 1.8rem;
-            list-style: none;
-            align-items: center;
-        }
-        .nav-menu a {
-            color: var(--text-secondary);
-            text-decoration: none;
-            font-weight: 600;
-            font-size: .95rem;
-            padding: .45rem .9rem;
-            border-radius: 8px;
-            transition: all .25s;
-        }
-        .nav-menu a:hover,
-        .nav-menu a.active {
-            color: var(--primary);
-            background: rgba(34,197,94,.08);
-        }
-
-        .nav-controls {
-            display: flex;
-            align-items: center;
-            gap: .8rem;
-        }
-        .theme-toggle, .language-toggle {
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            padding: .7rem;
-            border-radius: 50%;
-            cursor: pointer;
-            color: var(--text-primary);
-            font-size: 1rem;
-            width: 42px; height: 42px;
-            display: flex; align-items: center; justify-content: center;
-            transition: all .3s;
-        }
-        .theme-toggle:hover, .language-toggle:hover {
-            border-color: var(--primary);
-            background: rgba(34,197,94,.06);
-            transform: scale(1.05);
-        }
-
-        .language-switcher { position: relative; }
-        .language-dropdown {
-            position: absolute;
-            top: calc(100% + .5rem);
-            right: 0;
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            border-radius: 14px;
-            box-shadow: 0 8px 28px var(--shadow-lg);
-            min-width: 155px;
-            z-index: 1001;
-            opacity: 0;
-            visibility: hidden;
-            transform: translateY(-8px);
-            transition: all .25s ease;
-        }
-        .language-dropdown.active {
-            opacity: 1; visibility: visible; transform: translateY(0);
-        }
-        .language-option {
-            padding: .85rem 1.1rem;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: .55rem;
-            font-weight: 600;
-            font-size: .9rem;
-            transition: all .2s;
-            border-bottom: 1px solid var(--border);
-        }
-        .language-option:last-child { border-bottom: none; }
-        .language-option:first-child { border-radius: 14px 14px 0 0; }
-        .language-option:last-child  { border-radius: 0 0 14px 14px; }
-        .language-option:hover { background: rgba(34,197,94,.06); color: var(--primary); }
-        .language-option.active { background: var(--primary); color: white; }
-
-        .mobile-menu-btn {
-            display: none;
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            padding: .65rem;
-            border-radius: 9px;
-            cursor: pointer;
-            color: var(--primary);
-            font-size: 1.2rem;
-            transition: all .3s;
-        }
-
-        /* ─── HERO ─── */
-        .hero {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            padding: 8rem 5% 3rem;
-            position: relative;
-        }
-        .hero-content {
-            max-width: 1100px;
-            margin: 0 auto;
-            text-align: center;
-            width: 100%;
-        }
-
-        /* Avatar */
-        .hero-avatar {
-            margin-bottom: 1.6rem;
-            animation: fadeInUp .8s ease;
-        }
-        .avatar-ring {
-            width: 110px; height: 110px;
-            border-radius: 50%;
-            background: var(--gradient-primary);
-            padding: 3px;
-            margin: 0 auto;
-            animation: pulseBorder 3.5s ease infinite;
-        }
-        .avatar-inner {
-            width: 100%; height: 100%;
-            border-radius: 50%;
-            background: var(--card-bg);
-            display: flex; align-items: center; justify-content: center;
-            font-family: 'Outfit', sans-serif;
-            font-size: 2.4rem;
-            font-weight: 900;
-            color: var(--primary);
-            border: 2px solid var(--bg-darker);
-        }
-
-        /* Status badge */
-        .status-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: .5rem;
-            background: rgba(34,197,94,.08);
-            border: 1px solid rgba(34,197,94,.28);
-            padding: .4rem 1.1rem;
-            border-radius: 100px;
-            font-size: .88rem;
-            font-weight: 600;
-            color: var(--primary);
-            margin-bottom: 1.4rem;
-            animation: fadeInUp .9s ease .1s both;
-        }
-        .status-dot {
-            width: 8px; height: 8px;
-            background: var(--primary);
-            border-radius: 50%;
-            animation: dotBlink 2s ease infinite;
-        }
-
-        .hero h1 {
-            font-family: 'Outfit', sans-serif;
-            font-size: 4rem;
-            font-weight: 900;
-            margin-bottom: .7rem;
-            letter-spacing: -.03em;
-            line-height: 1.08;
-            animation: fadeInUp .9s ease .2s both;
-        }
-        .hero .subtitle {
-            font-size: 1.7rem;
-            color: var(--primary);
-            font-weight: 800;
-            margin-bottom: .9rem;
-            animation: fadeInUp .9s ease .35s both;
-        }
-        .hero .role {
-            font-size: 1.25rem;
-            color: var(--text-secondary);
-            margin-bottom: 1.4rem;
-            font-weight: 500;
-            animation: fadeInUp .9s ease .5s both;
-        }
-        .hero-description {
-            font-size: 1.05rem;
-            color: var(--text-secondary);
-            max-width: 760px;
-            margin: 0 auto 2.2rem;
-            line-height: 1.82;
-            animation: fadeInUp .9s ease .65s both;
-        }
-
-        /* Stats */
-        .stats {
-            display: flex;
-            justify-content: center;
-            gap: .9rem;
-            margin-bottom: 2.2rem;
-            flex-wrap: wrap;
-            animation: fadeInUp .9s ease .8s both;
-        }
-        .stat-card {
-            background: var(--card-bg);
-            padding: 1.4rem 1.2rem;
-            border-radius: 14px;
-            border: 1px solid var(--border);
-            text-align: center;
-            min-width: 155px;
-            transition: all .3s;
-            box-shadow: 0 2px 8px var(--shadow);
-        }
-        .stat-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 10px 28px var(--shadow-green);
-            border-color: var(--primary);
-        }
-        .stat-number {
-            font-family: 'Outfit', sans-serif;
-            font-size: 1.85rem;
-            font-weight: 900;
-            color: var(--primary);
-        }
-        .stat-label {
-            color: var(--text-muted);
-            font-weight: 700;
-            font-size: .82rem;
-            text-transform: uppercase;
-            letter-spacing: .6px;
-            margin-top: .2rem;
-        }
-
-        /* CTA Buttons */
-        .cta-buttons {
-            display: flex;
-            justify-content: center;
-            gap: .9rem;
-            margin-bottom: .8rem;
-            flex-wrap: wrap;
-            animation: fadeInUp .9s ease .95s both;
-        }
-        .btn {
-            padding: .85rem 1.5rem;
-            border-radius: 11px;
-            font-size: .97rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all .3s;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: .5rem;
-            border: 1.5px solid var(--border);
-            font-family: 'Inter', sans-serif;
-        }
-        .btn-primary {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary);
-        }
-        .btn-primary:hover {
-            background: var(--secondary);
-            border-color: var(--secondary);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 22px var(--shadow-green);
-        }
-        .btn-secondary {
-            background: var(--card-bg);
-            color: var(--text-primary);
-        }
-        .btn-secondary:hover {
-            border-color: var(--primary);
-            color: var(--primary);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 18px var(--shadow);
-        }
-
-        /* Tech icons */
-        .tech-icons {
-            display: flex;
-            justify-content: center;
-            gap: .9rem;
-            flex-wrap: wrap;
-            margin-top: 1.6rem;
-            animation: fadeInUp .9s ease 1.1s both;
-        }
-        .tech-icon {
-            background: var(--card-bg);
-            padding: 1.2rem 1.5rem;
-            border-radius: 14px;
-            border: 1px solid var(--border);
-            min-width: 110px;
-            text-align: center;
-            box-shadow: 0 2px 8px var(--shadow);
-            transition: all .3s;
-            font-size: .88rem;
-            font-weight: 600;
-            color: var(--text-secondary);
-        }
-        .tech-icon:hover {
-            transform: translateY(-5px);
-            border-color: var(--primary);
-            box-shadow: 0 12px 28px var(--shadow-green);
-            color: var(--primary);
-        }
-        .tech-icon i {
-            font-size: 1.9rem;
-            color: var(--primary);
-            display: block;
-            margin-bottom: .4rem;
-            transition: transform .3s;
-        }
-        .tech-icon:hover i { transform: scale(1.1); }
-
-        /* ─── SECTIONS ─── */
-        section {
-            padding: 5rem 5%;
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-        .section-title {
-            font-family: 'Outfit', sans-serif;
-            font-size: 2.6rem;
-            font-weight: 900;
-            text-align: center;
-            margin-bottom: 3rem;
-            letter-spacing: -.025em;
-        }
-        .section-title span {
-            background: var(--gradient-primary);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        /* Card */
-        .card {
-            background: var(--card-bg);
-            padding: 2rem;
-            border-radius: 18px;
-            border: 1px solid var(--border);
-            transition: all .3s;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 4px 18px var(--shadow);
-        }
-        .card::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0;
-            height: 3px;
-            background: var(--gradient-primary);
-        }
-        .card:hover {
-            transform: translateY(-6px);
-            box-shadow: 0 18px 44px var(--shadow-green);
-            border-color: rgba(34,197,94,.3);
-        }
-        .card-header {
-            display: flex;
-            align-items: center;
-            gap: .75rem;
-            margin-bottom: 1rem;
-        }
-        .card-header i {
-            font-size: 1.6rem;
-            background: var(--gradient-primary);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        .card-header h3 {
-            font-size: 1.25rem;
-            font-weight: 800;
-        }
-
-        /* ─── ABOUT ─── */
-        .about-intro {
-            background: var(--card-bg);
-            padding: 1.8rem 2rem;
-            border-radius: 14px;
-            border: 1px solid var(--border);
-            border-left: 4px solid var(--primary);
-            margin-bottom: 2rem;
-            box-shadow: 0 3px 12px var(--shadow);
-        }
-        .about-intro p {
-            margin-bottom: .75rem;
-            font-size: 1.02rem;
-            color: var(--text-secondary);
-            line-height: 1.82;
-        }
-        .about-intro p:last-child { margin-bottom: 0; }
-        .about-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
-            gap: 1.6rem;
-        }
-
-        /* ─── PROJECTS ─── */
-        .projects-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 1.4rem;
-            max-width: 1000px;
-            margin: 0 auto;
-        }
-        .project-card {
-            display: grid;
-            grid-template-columns: 190px 1fr;
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            border-radius: 18px;
-            overflow: hidden;
-            transition: all .3s;
-            box-shadow: 0 3px 12px var(--shadow);
-        }
-        .project-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 18px 40px var(--shadow-green);
-            border-color: rgba(34,197,94,.35);
-        }
-        .project-image {
-            background: var(--gradient-primary);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 2.4rem;
-            position: relative;
-            overflow: hidden;
-        }
-        .project-image::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(135deg, rgba(255,255,255,.12) 0%, transparent 100%);
-        }
-        .project-content { padding: 1.4rem 1.6rem; }
-        .project-title {
-            font-family: 'Outfit', sans-serif;
-            font-size: 1.25rem;
-            font-weight: 800;
-            margin-bottom: .55rem;
-        }
-        .project-description {
-            color: var(--text-secondary);
-            margin-bottom: 1rem;
-            font-size: .93rem;
-            line-height: 1.65;
-        }
-        .project-tags {
-            display: flex;
-            gap: .4rem;
-            flex-wrap: wrap;
-            margin-bottom: 1rem;
-        }
-        .project-tag {
-            background: rgba(34,197,94,.08);
-            color: var(--primary);
-            padding: .3rem .65rem;
-            border-radius: 8px;
-            font-size: .8rem;
-            border: 1px solid rgba(34,197,94,.18);
-            font-weight: 700;
-        }
-        .project-links {
-            display: flex;
-            gap: .55rem;
-            flex-wrap: wrap;
-        }
-        .project-link {
-            padding: .5rem .95rem;
-            border-radius: 9px;
-            font-weight: 700;
-            font-size: .88rem;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: .35rem;
-            border: 1.5px solid var(--primary);
-            color: var(--primary);
-            transition: all .3s;
-        }
-        .project-link:hover {
-            background: var(--primary);
-            color: white;
-        }
-
-        /* ─── SKILLS ─── */
-        .skill-category { margin-bottom: 2rem; }
-        .skill-category h3 {
-            font-size: 1.05rem;
-            font-weight: 800;
-            margin-bottom: .85rem;
-            color: var(--primary);
-            display: flex;
-            align-items: center;
-            gap: .5rem;
-        }
-        .skill-category h3::before {
-            content: '';
-            width: 14px; height: 3px;
-            background: var(--gradient-primary);
-            border-radius: 2px;
-        }
-        .skill-tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: .55rem;
-        }
-        .tag {
-            background: var(--gradient-primary);
-            color: white;
-            padding: .55rem 1rem;
-            border-radius: 10px;
-            font-weight: 700;
-            font-size: .88rem;
-            letter-spacing: .2px;
-            transition: all .3s;
-            cursor: default;
-        }
-        .tag:hover {
-            transform: translateY(-2px) scale(1.04);
-            box-shadow: 0 8px 20px var(--shadow-green);
-        }
-
-        /* ─── CONTACT ─── */
-        .contact-container {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 2rem;
-            max-width: 1000px;
-            margin: 0 auto;
-        }
-        .contact-cards { display: flex; flex-direction: column; gap: .7rem; }
-
-        /* Contact card = full <a> link */
-        a.contact-card {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            background: var(--card-bg);
-            padding: .95rem 1.2rem;
-            border-radius: 13px;
-            border: 1px solid var(--border);
-            text-decoration: none;
-            color: var(--text-primary);
-            transition: all .3s;
-            box-shadow: 0 2px 8px var(--shadow);
-        }
-        a.contact-card:hover {
-            border-color: var(--primary);
-            transform: translateX(5px);
-            box-shadow: 0 6px 20px var(--shadow-green);
-        }
-        .contact-icon {
-            width: 42px; height: 42px;
-            background: rgba(34,197,94,.1);
-            border-radius: 10px;
-            display: flex; align-items: center; justify-content: center;
-            color: var(--primary);
-            font-size: 1.15rem;
-            flex-shrink: 0;
-            transition: all .3s;
-        }
-        a.contact-card:hover .contact-icon {
-            background: var(--primary);
-            color: white;
-        }
-        .contact-info { flex: 1; min-width: 0; }
-        .contact-info strong {
-            display: block;
-            font-size: .78rem;
-            color: var(--text-muted);
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: .4px;
-            margin-bottom: .1rem;
-        }
-        .contact-info span {
-            color: var(--primary);
-            font-weight: 600;
-            font-size: .92rem;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            display: block;
-        }
-        .contact-arrow {
-            color: var(--text-muted);
-            font-size: .75rem;
-            flex-shrink: 0;
-            transition: all .3s;
-        }
-        a.contact-card:hover .contact-arrow {
-            color: var(--primary);
-            transform: translateX(3px);
-        }
-
-        /* Contact form panel */
-        .contact-form-panel {
-            background: var(--card-bg);
-            padding: 2rem;
-            border-radius: 18px;
-            border: 1px solid var(--border);
-            border-top: 4px solid var(--primary);
-            box-shadow: 0 4px 18px var(--shadow);
-        }
-        .contact-form-panel h3 {
-            margin-bottom: 1.4rem;
-            font-weight: 800;
-            font-size: 1.2rem;
-        }
-        .contact-form { display: grid; gap: .9rem; }
-        .contact-form label {
-            font-weight: 700;
-            font-size: .88rem;
-            display: block;
-            margin-bottom: .3rem;
-            color: var(--text-secondary);
-        }
-        .contact-form input,
-        .contact-form textarea {
-            width: 100%;
-            background: var(--bg-darker);
-            border: 1.5px solid var(--border);
-            border-radius: 10px;
-            padding: .75rem .95rem;
-            color: var(--text-primary);
-            font-family: 'Inter', sans-serif;
-            font-size: .95rem;
-            transition: all .3s;
-        }
-        .contact-form input:focus,
-        .contact-form textarea:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(34,197,94,.12);
-        }
-        .contact-form textarea { resize: vertical; }
-        .form-message {
-            padding: .9rem 1rem;
-            border-radius: 10px;
-            margin-top: .8rem;
-            font-weight: 700;
-            font-size: .92rem;
-            display: none;
-        }
-        .form-message.success {
-            background: rgba(34,197,94,.1);
-            color: var(--primary);
-            border: 1px solid rgba(34,197,94,.3);
-        }
-
-        /* ─── FOOTER ─── */
-        footer {
-            background: var(--card-bg);
-            padding: 2.5rem 5%;
-            text-align: center;
-            border-top: 1px solid var(--border);
-            margin-top: 2rem;
-        }
-        .footer-social {
-            display: flex;
-            justify-content: center;
-            gap: .9rem;
-            margin-bottom: 1.3rem;
-        }
-        .footer-social a {
-            width: 42px; height: 42px;
-            background: var(--bg-darker);
-            border: 1px solid var(--border);
-            border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            color: var(--text-secondary);
-            font-size: 1.05rem;
-            text-decoration: none;
-            transition: all .3s;
-        }
-        .footer-social a:hover {
-            background: var(--primary);
-            border-color: var(--primary);
-            color: white;
-            transform: translateY(-3px);
-        }
-        .footer-links {
-            display: flex;
-            justify-content: center;
-            gap: 1.4rem;
-            flex-wrap: wrap;
-            margin-bottom: 1rem;
-        }
-        .footer-links a {
-            color: var(--text-secondary);
-            text-decoration: none;
-            font-weight: 600;
-            font-size: .9rem;
-            transition: color .3s;
-        }
-        .footer-links a:hover { color: var(--primary); }
-        .footer-copyright { color: var(--text-muted); font-size: .85rem; }
-
-        /* Scroll-to-top */
-        .scroll-to-top {
-            position: fixed;
-            bottom: 1.5rem;
-            right: 1.5rem;
-            width: 46px; height: 46px;
-            background: var(--primary);
-            border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            color: white;
-            cursor: pointer;
-            opacity: 0; visibility: hidden;
-            transition: all .3s;
-            z-index: 999;
-            box-shadow: 0 4px 14px var(--shadow-green);
-        }
-        .scroll-to-top.visible { opacity: 1; visibility: visible; }
-        .scroll-to-top:hover {
-            background: var(--secondary);
-            transform: translateY(-4px);
-            box-shadow: 0 8px 22px var(--shadow-green);
-        }
-
-        /* ─── RESPONSIVE ─── */
-        @media (max-width: 768px) {
-            .nav-menu {
-                position: fixed;
-                top: 62px; left: -100%;
-                width: 100%;
-                height: calc(100vh - 62px);
-                background: var(--card-bg);
-                flex-direction: column;
-                align-items: center;
-                padding: 2rem;
-                transition: left .3s;
-                backdrop-filter: none;
-            }
-            .nav-menu.active { left: 0; }
-            .mobile-menu-btn { display: block; }
-            .hero h1 { font-size: 2.4rem; }
-            .hero .subtitle { font-size: 1.3rem; }
-            .section-title { font-size: 2rem; }
-            .contact-container { grid-template-columns: 1fr; }
-            .project-card { grid-template-columns: 1fr; }
-            .project-image { min-height: 120px; }
-        }
-
-        @media (max-width: 480px) {
-            nav { padding: .75rem 4%; }
-            .logo { font-size: 1.4rem; }
-            .hero { padding: 7rem 4% 2rem; }
-            .hero h1 { font-size: 1.9rem; }
-            .hero .subtitle { font-size: 1.1rem; }
-            section { padding: 3rem 4%; }
-            .section-title { font-size: 1.7rem; }
-            .stat-card { min-width: 115px; padding: 1rem .85rem; }
-            .stat-number { font-size: 1.55rem; }
-            .tech-icon { min-width: 90px; padding: 1rem; }
+        *{margin:0;padding:0;box-sizing:border-box}
+        :root{
+            --p:#22c55e;--s:#16a34a;--a:#4ade80;
+            --glow:rgba(34,197,94,.55);--gs:rgba(34,197,94,.18);
+            --bg:#020c06;--bgm:#071209;
+            --card:rgba(8,22,12,.85);--cards:#0b1e0f;
+            --bdr:rgba(34,197,94,.18);--bdrh:rgba(34,197,94,.55);
+            --t1:#d4f7df;--t2:#7fba95;--t3:#4a7a5a;
+            --sh:rgba(0,0,0,.5);
+            --gr:linear-gradient(135deg,#22c55e 0%,#16a34a 100%);
+        }
+        [data-theme="light"]{
+            --bg:#f2faf4;--bgm:#e8f5ec;
+            --card:rgba(255,255,255,.92);--cards:#fff;
+            --bdr:rgba(34,197,94,.22);--bdrh:rgba(34,197,94,.6);
+            --t1:#0f2e18;--t2:#3a6b4a;--t3:#7aaa8a;--sh:rgba(0,0,0,.08);
+        }
+        body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--t1);line-height:1.65;overflow-x:hidden}
+        #cc{position:fixed;inset:0;z-index:-1}
+        .pts{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+        .pt{position:absolute;border-radius:50%;background:var(--p);opacity:0;animation:fp linear infinite}
+        @keyframes fp{0%{opacity:0;transform:translateY(0) scale(1)}10%{opacity:.6}90%{opacity:.3}100%{opacity:0;transform:translateY(-100vh) scale(.3)}}
+        @keyframes fiu{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+        @keyframes gp{0%,100%{box-shadow:0 0 16px var(--gs)}50%{box-shadow:0 0 32px var(--glow),0 0 60px var(--gs)}}
+        @keyframes rr{to{transform:rotate(360deg)}}
+        @keyframes db{0%,100%{opacity:1;box-shadow:0 0 6px var(--p)}50%{opacity:.3;box-shadow:none}}
+        @keyframes sl{0%{top:-2px;opacity:0}5%{opacity:.6}95%{opacity:.4}100%{top:100%;opacity:0}}
+        nav{position:fixed;top:0;width:100%;background:rgba(2,12,6,.88);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);padding:.85rem 5%;z-index:1000;border-bottom:1px solid var(--bdr);transition:all .3s}
+        [data-theme="light"] nav{background:rgba(242,250,244,.9)}
+        nav.sc{box-shadow:0 4px 28px var(--sh)}
+        nav .c{max-width:1400px;margin:0 auto;display:flex;justify-content:space-between;align-items:center}
+        .logo{font-family:'Outfit',sans-serif;font-size:1.7rem;font-weight:900;background:var(--gr);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;cursor:pointer;filter:drop-shadow(0 0 8px rgba(34,197,94,.5));transition:all .3s}
+        .logo:hover{transform:translateY(-2px);filter:drop-shadow(0 0 14px rgba(34,197,94,.8))}
+        .nm{display:flex;gap:1.6rem;list-style:none;align-items:center}
+        .nm a{color:var(--t2);text-decoration:none;font-weight:600;font-size:.92rem;padding:.4rem .85rem;border-radius:8px;border:1px solid transparent;transition:all .25s}
+        .nm a:hover,.nm a.ac{color:var(--p);border-color:var(--bdr);background:var(--gs);text-shadow:0 0 8px var(--glow)}
+        .nc{display:flex;align-items:center;gap:.7rem}
+        .cb{background:var(--card);border:1px solid var(--bdr);width:40px;height:40px;border-radius:50%;cursor:pointer;color:var(--t1);font-size:.95rem;display:flex;align-items:center;justify-content:center;transition:all .3s}
+        .cb:hover{border-color:var(--p);color:var(--p);box-shadow:0 0 12px var(--gs);transform:scale(1.08)}
+        .ls{position:relative}
+        .lt{font-weight:700;font-size:.8rem}
+        .ld{position:absolute;top:calc(100% + .5rem);right:0;background:var(--cards);border:1px solid var(--bdr);border-radius:12px;box-shadow:0 12px 32px var(--sh);min-width:148px;z-index:1001;opacity:0;visibility:hidden;transform:translateY(-8px);transition:all .25s}
+        .ld.on{opacity:1;visibility:visible;transform:translateY(0)}
+        .lo{padding:.8rem 1rem;cursor:pointer;font-weight:600;font-size:.88rem;display:flex;align-items:center;gap:.5rem;border-bottom:1px solid var(--bdr);transition:all .2s;color:var(--t2)}
+        .lo:last-child{border-bottom:none;border-radius:0 0 12px 12px}
+        .lo:first-child{border-radius:12px 12px 0 0}
+        .lo:hover{background:var(--gs);color:var(--p)}
+        .lo.ac{background:var(--p);color:#fff}
+        .mb{display:none;background:var(--card);border:1px solid var(--bdr);padding:.6rem;border-radius:9px;cursor:pointer;color:var(--p);font-size:1.15rem;transition:all .3s}
+        .hero{min-height:100vh;display:flex;align-items:center;padding:8rem 5% 3rem;position:relative;z-index:1}
+        .hc{max-width:1100px;margin:0 auto;text-align:center;width:100%}
+        .ha{margin-bottom:1.8rem;animation:fiu .8s ease;position:relative;display:inline-block}
+        .ao{width:128px;height:128px;margin:0 auto;position:relative}
+        .ao::before{content:'';position:absolute;inset:-6px;border-radius:50%;border:2px dashed rgba(34,197,94,.4);animation:rr 12s linear infinite}
+        .ao::after{content:'';position:absolute;inset:-14px;border-radius:50%;border:1px dashed rgba(34,197,94,.18);animation:rr 20s linear infinite reverse}
+        .ar{width:128px;height:128px;border-radius:50%;background:linear-gradient(135deg,#22c55e,#0f5a28,#22c55e);padding:3px;animation:gp 3s ease infinite}
+        .ai{width:100%;height:100%;border-radius:50%;background:var(--bgm);display:flex;align-items:center;justify-content:center;font-family:'Outfit',sans-serif;font-size:2.6rem;font-weight:900;color:var(--p);position:relative;overflow:hidden}
+        .ai::after{content:'';position:absolute;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--p),transparent);animation:sl 3s ease-in-out infinite}
+        .sb{display:inline-flex;align-items:center;gap:.5rem;background:rgba(34,197,94,.07);border:1px solid rgba(34,197,94,.3);padding:.4rem 1.1rem;border-radius:100px;font-size:.85rem;font-weight:600;color:var(--p);margin-bottom:1.4rem;animation:fiu .9s ease .1s both;box-shadow:0 0 14px rgba(34,197,94,.12)}
+        .sd{width:8px;height:8px;background:var(--p);border-radius:50%;animation:db 2s ease infinite}
+        .hero h1{font-family:'Outfit',sans-serif;font-size:3.8rem;font-weight:900;margin-bottom:.6rem;letter-spacing:-.03em;line-height:1.08;animation:fiu .9s ease .2s both;text-shadow:0 0 40px rgba(34,197,94,.2)}
+        .sub{font-size:1.65rem;color:var(--p);font-weight:800;margin-bottom:.85rem;animation:fiu .9s ease .35s both;text-shadow:0 0 18px var(--glow)}
+        .rol{font-size:1.15rem;color:var(--t2);font-weight:500;margin-bottom:1.4rem;animation:fiu .9s ease .5s both}
+        .hd{font-size:1rem;color:var(--t2);max-width:740px;margin:0 auto 2.2rem;line-height:1.85;animation:fiu .9s ease .65s both}
+        .stats{display:flex;justify-content:center;gap:.85rem;margin-bottom:2.2rem;flex-wrap:wrap;animation:fiu .9s ease .8s both}
+        .sc2{background:var(--card);padding:1.3rem 1.1rem;border-radius:14px;border:1px solid var(--bdr);text-align:center;min-width:150px;transition:all .3s;backdrop-filter:blur(12px);position:relative;overflow:hidden}
+        .sc2::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--gr)}
+        .sc2:hover{transform:translateY(-5px);border-color:var(--bdrh);box-shadow:0 12px 32px rgba(34,197,94,.2)}
+        .sn{font-family:'Outfit',sans-serif;font-size:1.75rem;font-weight:900;color:var(--p);text-shadow:0 0 12px var(--glow)}
+        .sl2{color:var(--t3);font-weight:700;font-size:.78rem;text-transform:uppercase;letter-spacing:.6px;margin-top:.25rem}
+        .ctb{display:flex;justify-content:center;gap:.85rem;margin-bottom:.8rem;flex-wrap:wrap;animation:fiu .9s ease .95s both}
+        .btn{padding:.8rem 1.5rem;border-radius:10px;font-size:.95rem;font-weight:700;cursor:pointer;transition:all .3s;text-decoration:none;display:inline-flex;align-items:center;gap:.45rem;border:1.5px solid;font-family:'Inter',sans-serif}
+        .bp{background:var(--p);color:#fff;border-color:var(--p);box-shadow:0 0 20px rgba(34,197,94,.3)}
+        .bp:hover{background:var(--s);border-color:var(--s);transform:translateY(-2px);box-shadow:0 6px 24px rgba(34,197,94,.5)}
+        .bs{background:transparent;color:var(--p);border-color:var(--bdrh)}
+        .bs:hover{background:var(--gs);border-color:var(--p);transform:translateY(-2px);box-shadow:0 0 18px var(--gs)}
+        .ti{display:flex;justify-content:center;gap:.85rem;flex-wrap:wrap;margin-top:1.6rem;animation:fiu .9s ease 1.1s both}
+        .tic{background:var(--card);padding:1.1rem 1.4rem;border-radius:14px;border:1px solid var(--bdr);min-width:105px;text-align:center;transition:all .3s;font-size:.85rem;font-weight:600;color:var(--t2);backdrop-filter:blur(12px);cursor:default}
+        .tic:hover{transform:translateY(-5px);border-color:var(--p);box-shadow:0 12px 28px rgba(34,197,94,.22);color:var(--p)}
+        .tic i{font-size:1.85rem;color:var(--p);display:block;margin-bottom:.35rem;transition:all .3s;filter:drop-shadow(0 0 4px rgba(34,197,94,.4))}
+        .tic:hover i{transform:scale(1.12);filter:drop-shadow(0 0 10px rgba(34,197,94,.7))}
+        section{padding:5rem 5%;max-width:1400px;margin:0 auto;position:relative;z-index:1}
+        .st{font-family:'Outfit',sans-serif;font-size:2.5rem;font-weight:900;text-align:center;margin-bottom:3rem;letter-spacing:-.025em}
+        .st span{background:var(--gr);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 0 8px rgba(34,197,94,.4))}
+        .card{background:var(--card);padding:2rem;border-radius:18px;border:1px solid var(--bdr);transition:all .3s;position:relative;overflow:hidden;backdrop-filter:blur(14px)}
+        .card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--gr)}
+        .card:hover{transform:translateY(-6px);border-color:var(--bdrh);box-shadow:0 20px 48px rgba(34,197,94,.15)}
+        .card p{color:var(--t2);line-height:1.78}
+        .ch{display:flex;align-items:center;gap:.75rem;margin-bottom:1rem}
+        .ch i{font-size:1.55rem;background:var(--gr);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 0 6px rgba(34,197,94,.5))}
+        .ch h3{font-size:1.2rem;font-weight:800}
+        .ai2{background:var(--card);padding:1.8rem 2rem;border-radius:14px;border:1px solid var(--bdr);border-left:3px solid var(--p);margin-bottom:2rem;backdrop-filter:blur(14px)}
+        .ai2 p{margin-bottom:.75rem;font-size:1rem;color:var(--t2);line-height:1.82}
+        .ai2 p:last-child{margin-bottom:0}
+        .ag{display:grid;grid-template-columns:repeat(auto-fit,minmax(265px,1fr));gap:1.5rem}
+        .pg{display:flex;flex-direction:column;gap:1.3rem;max-width:1000px;margin:0 auto}
+        .pc{display:grid;grid-template-columns:185px 1fr;background:var(--card);border:1px solid var(--bdr);border-radius:18px;overflow:hidden;transition:all .35s;backdrop-filter:blur(14px)}
+        .pc:hover{transform:translateY(-5px) translateX(2px);border-color:var(--bdrh);box-shadow:0 20px 44px rgba(34,197,94,.18)}
+        .pi{background:linear-gradient(135deg,#071a0b,#0f3318);display:flex;align-items:center;justify-content:center;color:var(--p);font-size:2.5rem;position:relative;overflow:hidden;border-right:1px solid var(--bdr)}
+        .pi i{filter:drop-shadow(0 0 12px var(--glow));z-index:1}
+        .pi::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at center,rgba(34,197,94,.12) 0%,transparent 70%)}
+        .pi::after{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(34,197,94,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(34,197,94,.08) 1px,transparent 1px);background-size:20px 20px}
+        .pcon{padding:1.4rem 1.6rem}
+        .pt2{font-family:'Outfit',sans-serif;font-size:1.2rem;font-weight:800;margin-bottom:.5rem}
+        .pd{color:var(--t2);margin-bottom:1rem;font-size:.91rem;line-height:1.65}
+        .ptags{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.9rem}
+        .ptag{background:rgba(34,197,94,.07);color:var(--p);padding:.28rem .6rem;border-radius:7px;font-size:.78rem;border:1px solid rgba(34,197,94,.2);font-weight:700}
+        .pl{display:flex;gap:.5rem;flex-wrap:wrap}
+        .plink{padding:.45rem .9rem;border-radius:9px;font-weight:700;font-size:.86rem;text-decoration:none;display:inline-flex;align-items:center;gap:.35rem;border:1.5px solid var(--bdrh);color:var(--p);transition:all .3s}
+        .plink:hover{background:var(--p);color:#fff;box-shadow:0 0 14px var(--glow);border-color:var(--p)}
+        .skc{margin-bottom:2rem}
+        .skc h3{font-size:1rem;font-weight:800;margin-bottom:.85rem;color:var(--p);display:flex;align-items:center;gap:.5rem}
+        .skc h3::before{content:'';width:14px;height:2px;background:var(--gr);border-radius:2px}
+        .skt{display:flex;flex-wrap:wrap;gap:.5rem}
+        .tag{background:rgba(34,197,94,.07);color:var(--p);padding:.5rem .95rem;border-radius:10px;font-weight:700;font-size:.86rem;border:1px solid rgba(34,197,94,.22);transition:all .3s;cursor:default}
+        .tag:hover{background:var(--p);color:#fff;transform:translateY(-2px) scale(1.04);box-shadow:0 6px 18px rgba(34,197,94,.35);border-color:var(--p)}
+        .cc2{display:grid;grid-template-columns:1fr 1fr;gap:2rem;max-width:1000px;margin:0 auto}
+        .ccs{display:flex;flex-direction:column;gap:.65rem}
+        a.ccard{display:flex;align-items:center;gap:1rem;background:var(--card);padding:.9rem 1.15rem;border-radius:13px;border:1px solid var(--bdr);text-decoration:none;color:var(--t1);transition:all .3s;backdrop-filter:blur(14px)}
+        a.ccard:hover{border-color:var(--bdrh);transform:translateX(6px);box-shadow:0 4px 20px rgba(34,197,94,.18)}
+        .ci{width:40px;height:40px;background:rgba(34,197,94,.08);border:1px solid var(--bdr);border-radius:10px;display:flex;align-items:center;justify-content:center;color:var(--p);font-size:1.1rem;flex-shrink:0;transition:all .3s}
+        a.ccard:hover .ci{background:var(--p);color:#fff;box-shadow:0 0 12px var(--glow);border-color:var(--p)}
+        .cinfo{flex:1;min-width:0}
+        .cinfo strong{display:block;font-size:.75rem;color:var(--t3);font-weight:600;text-transform:uppercase;letter-spacing:.4px;margin-bottom:.1rem}
+        .cinfo span{color:var(--p);font-weight:600;font-size:.9rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block}
+        .ca{color:var(--t3);font-size:.75rem;flex-shrink:0;transition:all .3s}
+        a.ccard:hover .ca{color:var(--p);transform:translateX(3px)}
+        .cfp{background:var(--card);padding:2rem;border-radius:18px;border:1px solid var(--bdr);border-top:2px solid var(--p);backdrop-filter:blur(14px)}
+        .cfp h3{margin-bottom:1.4rem;font-weight:800;font-size:1.15rem}
+        .cf{display:grid;gap:.85rem}
+        .cf label{font-weight:700;font-size:.85rem;display:block;margin-bottom:.28rem;color:var(--t2)}
+        .cf input,.cf textarea{width:100%;background:rgba(34,197,94,.04);border:1.5px solid var(--bdr);border-radius:10px;padding:.72rem .9rem;color:var(--t1);font-family:'Inter',sans-serif;font-size:.92rem;transition:all .3s}
+        .cf input:focus,.cf textarea:focus{outline:none;border-color:var(--p);box-shadow:0 0 0 3px rgba(34,197,94,.12)}
+        .cf textarea{resize:vertical}
+        .fm{padding:.85rem 1rem;border-radius:10px;margin-top:.8rem;font-weight:700;font-size:.9rem;display:none}
+        .fm.ok{background:rgba(34,197,94,.08);color:var(--p);border:1px solid rgba(34,197,94,.3)}
+        footer{background:var(--card);padding:2.5rem 5%;text-align:center;border-top:1px solid var(--bdr);margin-top:2rem;position:relative;z-index:1;backdrop-filter:blur(14px)}
+        .fs{display:flex;justify-content:center;gap:.85rem;margin-bottom:1.2rem}
+        .fs a{width:40px;height:40px;background:rgba(34,197,94,.06);border:1px solid var(--bdr);border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--t2);font-size:1rem;text-decoration:none;transition:all .3s}
+        .fs a:hover{background:var(--p);border-color:var(--p);color:#fff;transform:translateY(-3px);box-shadow:0 0 16px var(--glow)}
+        .fl{display:flex;justify-content:center;gap:1.3rem;flex-wrap:wrap;margin-bottom:.9rem}
+        .fl a{color:var(--t2);text-decoration:none;font-weight:600;font-size:.87rem;transition:all .3s}
+        .fl a:hover{color:var(--p);text-shadow:0 0 8px var(--glow)}
+        .fc{color:var(--t3);font-size:.82rem}
+        .stt{position:fixed;bottom:1.5rem;right:1.5rem;width:44px;height:44px;background:var(--p);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;cursor:pointer;opacity:0;visibility:hidden;transition:all .3s;z-index:999;box-shadow:0 0 18px rgba(34,197,94,.45)}
+        .stt.v{opacity:1;visibility:visible}
+        .stt:hover{background:var(--s);transform:translateY(-4px);box-shadow:0 0 28px rgba(34,197,94,.6)}
+        @media(max-width:768px){
+            .nm{position:fixed;top:60px;left:-100%;width:100%;height:calc(100vh - 60px);background:rgba(2,12,6,.96);flex-direction:column;align-items:center;padding:2rem;transition:left .3s;backdrop-filter:blur(18px)}
+            .nm.on{left:0}
+            .mb{display:block}
+            .hero h1{font-size:2.3rem}
+            .sub{font-size:1.25rem}
+            .st{font-size:1.9rem}
+            .cc2{grid-template-columns:1fr}
+            .pc{grid-template-columns:1fr}
+            .pi{min-height:110px}
+        }
+        @media(max-width:480px){
+            nav{padding:.7rem 4%}
+            .logo{font-size:1.35rem}
+            .hero{padding:7rem 4% 2rem}
+            .hero h1{font-size:1.85rem}
+            section{padding:3rem 4%}
+            .st{font-size:1.6rem}
+            .sc2{min-width:110px;padding:.95rem .8rem}
+            .sn{font-size:1.5rem}
+            .tic{min-width:88px;padding:1rem}
         }
     </style>
 </head>
 <body>
-<div class="bg-wrap"></div>
+<canvas id="cc"></canvas>
+<div class="pts" id="pts"></div>
 
-<!-- ═══ NAVBAR ═══ -->
-<nav id="navbar">
-    <div class="container">
-        <div class="logo" onclick="scrollToSection('home')">Navrozbek</div>
-        <ul class="nav-menu" id="navMenu">
-            <li><a href="#home"      data-i18n="nav.home"      onclick="scrollToSection('home')"      class="nav-link active">Bosh sahifa</a></li>
-            <li><a href="#about"     data-i18n="nav.about"     onclick="scrollToSection('about')"     class="nav-link">Men haqimda</a></li>
-            <li><a href="#education" data-i18n="nav.education" onclick="scrollToSection('education')" class="nav-link">Ta'lim</a></li>
-            <li><a href="#projects"  data-i18n="nav.projects"  onclick="scrollToSection('projects')"  class="nav-link">Loyihalar</a></li>
-            <li><a href="#skills"    data-i18n="nav.skills"    onclick="scrollToSection('skills')"    class="nav-link">Ko'nikmalar</a></li>
-            <li><a href="#contact"   data-i18n="nav.contact"   onclick="scrollToSection('contact')"   class="nav-link">Aloqa</a></li>
+<nav id="nb">
+    <div class="c">
+        <div class="logo" onclick="go('home')">Navrozbek</div>
+        <ul class="nm" id="nm">
+            <li><a href="#home"      data-i18n="nav.home"      onclick="go('home')"      class="nl ac">Bosh sahifa</a></li>
+            <li><a href="#about"     data-i18n="nav.about"     onclick="go('about')"     class="nl">Men haqimda</a></li>
+            <li><a href="#education" data-i18n="nav.education" onclick="go('education')" class="nl">Ta'lim</a></li>
+            <li><a href="#projects"  data-i18n="nav.projects"  onclick="go('projects')"  class="nl">Loyihalar</a></li>
+            <li><a href="#skills"    data-i18n="nav.skills"    onclick="go('skills')"    class="nl">Ko'nikmalar</a></li>
+            <li><a href="#contact"   data-i18n="nav.contact"   onclick="go('contact')"   class="nl">Aloqa</a></li>
         </ul>
-        <div class="nav-controls">
-            <div class="language-switcher">
-                <button class="language-toggle" onclick="toggleLanguageDropdown()" title="Tilni o'zgartirish">
-                    <span id="current-lang">UZ</span>
-                </button>
-                <div class="language-dropdown" id="languageDropdown">
-                    <div class="language-option active" onclick="changeLanguage('uz')" data-lang="uz">🇺🇿 O'zbek</div>
-                    <div class="language-option"        onclick="changeLanguage('en')" data-lang="en">🇬🇧 English</div>
-                    <div class="language-option"        onclick="changeLanguage('ru')" data-lang="ru">🇷🇺 Русский</div>
+        <div class="nc">
+            <div class="ls">
+                <button class="cb lt" onclick="tld()"><span id="cl">UZ</span></button>
+                <div class="ld" id="ld">
+                    <div class="lo ac" onclick="cl2('uz')" data-lang="uz">🇺🇿 O'zbek</div>
+                    <div class="lo"    onclick="cl2('en')" data-lang="en">🇬🇧 English</div>
+                    <div class="lo"    onclick="cl2('ru')" data-lang="ru">🇷🇺 Русский</div>
                 </div>
             </div>
-            <button class="theme-toggle" onclick="toggleTheme()" title="Rejimni o'zgartirish">
-                <i class="fas fa-moon" id="theme-icon"></i>
-            </button>
-            <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
-                <i class="fas fa-bars"></i>
-            </button>
+            <button class="cb" onclick="tt()" title="Tema"><i class="fas fa-sun" id="ti"></i></button>
+            <button class="mb cb" onclick="tmm()" style="border-radius:9px"><i class="fas fa-bars"></i></button>
         </div>
     </div>
 </nav>
 
-<!-- ═══ HERO ═══ -->
 <section id="home" class="hero">
-    <div class="hero-content">
-        <div class="hero-avatar">
-            <div class="avatar-ring">
-                <div class="avatar-inner">NA</div>
+    <div class="hc">
+        <div class="ha">
+            <div class="ao">
+                <div class="ar"><div class="ai">NA</div></div>
             </div>
         </div>
-
-        <div class="status-badge">
-            <span class="status-dot"></span>
-            <span data-i18n="hero.status">O'qimoqdaman va rivojlanmoqdaman</span>
-        </div>
-
+        <div class="sb"><span class="sd"></span><span data-i18n="hero.status">O'qimoqdaman va rivojlanmoqdaman</span></div>
         <h1 data-i18n="hero.name">Allamov Navrozbek</h1>
-        <div class="subtitle" data-i18n="hero.role">IT o'quvchisi</div>
-        <div class="role" data-i18n="hero.subtitle">Python • HTML • CSS</div>
-
-        <p class="hero-description" data-i18n="hero.description">
-            Zamonaviy, minimalistik va tezkor veb-sahifalar yaratishni o'rganmoqdaman. Maqsadim — toza kod, foydalanuvchi uchun qulay interfeys va barqaror natija.
-        </p>
-
+        <div class="sub" data-i18n="hero.role">IT o'quvchisi</div>
+        <div class="rol" data-i18n="hero.subtitle">Python • HTML • CSS</div>
+        <p class="hd" data-i18n="hero.description">Zamonaviy, minimalistik va tezkor veb-sahifalar yaratishni o'rganmoqdaman. Maqsadim — toza kod, foydalanuvchi uchun qulay interfeys va barqaror natija.</p>
         <div class="stats">
-            <div class="stat-card">
-                <div class="stat-number">2016–2025</div>
-                <div class="stat-label" data-i18n="stat.school">Maktab</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number">2024–</div>
-                <div class="stat-label" data-i18n="stat.it">IT kurslari</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number">2025–</div>
-                <div class="stat-label" data-i18n="stat.poly">Politexnikum</div>
-            </div>
+            <div class="sc2"><div class="sn">2016–2025</div><div class="sl2" data-i18n="stat.school">Maktab</div></div>
+            <div class="sc2"><div class="sn">2024–</div><div class="sl2" data-i18n="stat.it">IT kurslari</div></div>
+            <div class="sc2"><div class="sn">2025–</div><div class="sl2" data-i18n="stat.poly">Politexnikum</div></div>
         </div>
-
-        <div class="cta-buttons">
-            <button class="btn btn-primary" onclick="scrollToSection('projects')">
-                <i class="fas fa-code"></i>
-                <span data-i18n="hero.cta_projects">Loyihalarni ko'rish</span>
-            </button>
-            <button class="btn btn-secondary" onclick="scrollToSection('contact')">
-                <i class="fas fa-paper-plane"></i>
-                <span data-i18n="hero.cta_contact">Bog'lanish</span>
-            </button>
+        <div class="ctb">
+            <button class="btn bp" onclick="go('projects')"><i class="fas fa-code"></i><span data-i18n="hero.cta_projects">Loyihalarni ko'rish</span></button>
+            <button class="btn bs" onclick="go('contact')"><i class="fas fa-paper-plane"></i><span data-i18n="hero.cta_contact">Bog'lanish</span></button>
         </div>
-
-        <div class="tech-icons">
-            <div class="tech-icon"><i class="fab fa-python"></i>Python</div>
-            <div class="tech-icon"><i class="fab fa-html5"></i>HTML5</div>
-            <div class="tech-icon"><i class="fab fa-css3-alt"></i>CSS3</div>
+        <div class="ti">
+            <div class="tic"><i class="fab fa-python"></i>Python</div>
+            <div class="tic"><i class="fab fa-html5"></i>HTML5</div>
+            <div class="tic"><i class="fab fa-css3-alt"></i>CSS3</div>
         </div>
     </div>
 </section>
 
-<!-- ═══ ABOUT ═══ -->
 <section id="about">
-    <h2 class="section-title" data-i18n-html="about.title_html">Men <span>haqimda</span></h2>
-    <div class="about-intro">
+    <h2 class="st" data-i18n-html="about.title_html">Men <span>haqimda</span></h2>
+    <div class="ai2">
         <p data-i18n="about.intro1">Men Allamov Navrozbekman — IT yo'nalishida tahsil olayotgan o'quvchiman. Python, HTML va CSS asoslarini o'rganib, amaliy loyihalar bilan tajriba to'plamoqdaman.</p>
         <p data-i18n="about.intro2">Hozirda maktabda o'qib, bir vaqtning o'zida IT kurslarida qatnashib, Politexnik texnikumda ham ta'lim olib kelayotganman. Dasturlash sohasida yangi bilimlar olish va amaliy loyihalar yaratishga qiziqaman.</p>
         <p data-i18n="about.intro3">Maqsadim: professional dasturchi bo'lib, IT sohasida muvaffaqiyatli ishlash va o'z bilimlarimni doimiy ravishda yangilab borish.</p>
     </div>
-    <div class="about-grid">
-        <div class="card">
-            <div class="card-header"><i class="fas fa-user-graduate"></i><h3 data-i18n="about.card1.title">Ta'lim yo'nalishi</h3></div>
-            <p data-i18n="about.card1.text">IT sohasida chuqur bilim olish va zamonaviy texnologiyalarni o'rganish. Python, HTML, CSS va JavaScript asoslarini o'rganib, web dasturlash sohasida professional bo'lish.</p>
-        </div>
-        <div class="card">
-            <div class="card-header"><i class="fas fa-code"></i><h3 data-i18n="about.card2.title">Dasturlash</h3></div>
-            <p data-i18n="about.card2.text">Python dasturlash tilini o'rganib, algoritmlar va ma'lumotlar tuzilmalari bilan ishlash. HTML va CSS yordamida zamonaviy web-sahifalar yaratish.</p>
-        </div>
-        <div class="card">
-            <div class="card-header"><i class="fas fa-lightbulb"></i><h3 data-i18n="about.card3.title">Maqsadlar</h3></div>
-            <p data-i18n="about.card3.text">Professional dasturchi bo'lib, katta loyihalarda ishlash. IT sohasida muvaffaqiyatli karyera qilish va o'z bilimlarimni doimiy yangilab borish.</p>
-        </div>
-        <div class="card">
-            <div class="card-header"><i class="fas fa-heart"></i><h3 data-i18n="about.card4.title">Qiziqishlar</h3></div>
-            <p data-i18n="about.card4.text">Dasturlash, web dizayn, yangi texnologiyalar, o'qish va o'zini rivojlantirish. IT sohasidagi yangi tendentsiyalar va innovatsiyalar.</p>
-        </div>
+    <div class="ag">
+        <div class="card"><div class="ch"><i class="fas fa-user-graduate"></i><h3 data-i18n="about.card1.title">Ta'lim yo'nalishi</h3></div><p data-i18n="about.card1.text">IT sohasida chuqur bilim olish va zamonaviy texnologiyalarni o'rganish. Python, HTML, CSS va JavaScript asoslarini o'rganib, web dasturlash sohasida professional bo'lish.</p></div>
+        <div class="card"><div class="ch"><i class="fas fa-code"></i><h3 data-i18n="about.card2.title">Dasturlash</h3></div><p data-i18n="about.card2.text">Python dasturlash tilini o'rganib, algoritmlar va ma'lumotlar tuzilmalari bilan ishlash. HTML va CSS yordamida zamonaviy web-sahifalar yaratish.</p></div>
+        <div class="card"><div class="ch"><i class="fas fa-lightbulb"></i><h3 data-i18n="about.card3.title">Maqsadlar</h3></div><p data-i18n="about.card3.text">Professional dasturchi bo'lib, katta loyihalarda ishlash. IT sohasida muvaffaqiyatli karyera qilish va o'z bilimlarimni doimiy yangilab borish.</p></div>
+        <div class="card"><div class="ch"><i class="fas fa-heart"></i><h3 data-i18n="about.card4.title">Qiziqishlar</h3></div><p data-i18n="about.card4.text">Dasturlash, web dizayn, yangi texnologiyalar, o'qish va o'zini rivojlantirish. IT sohasidagi yangi tendentsiyalar va innovatsiyalar.</p></div>
     </div>
 </section>
 
-<!-- ═══ EDUCATION ═══ -->
 <section id="education">
-    <h2 class="section-title" data-i18n-html="edu.title_html">Ta'<span>lim</span></h2>
-
-    <div class="card" style="margin-bottom:1.6rem">
-        <div class="card-header">
-            <i class="fas fa-school"></i>
-            <h3 data-i18n="edu.school.title">Maktab ta'limi</h3>
-        </div>
-        <p style="margin-bottom:.6rem"><strong data-i18n="edu.school.name">Toshkent shahri maktabi</strong></p>
-        <p style="color:var(--text-secondary);margin-bottom:.45rem"><i class="fas fa-calendar-alt"></i> <span data-i18n="edu.school.period">2016 — 2025</span></p>
-        <p style="color:var(--text-secondary);line-height:1.75" data-i18n="edu.school.subjects">Asosiy fanlar: Matematika, Fizika, Informatika, O'zbek tili va adabiyoti, Ingliz tili, Rus tili</p>
+    <h2 class="st" data-i18n-html="edu.title_html">Ta'<span>lim</span></h2>
+    <div class="card" style="margin-bottom:1.5rem">
+        <div class="ch"><i class="fas fa-school"></i><h3 data-i18n="edu.school.title">Maktab ta'limi</h3></div>
+        <p style="margin-bottom:.55rem"><strong data-i18n="edu.school.name">Toshkent shahri maktabi</strong></p>
+        <p style="margin-bottom:.4rem"><i class="fas fa-calendar-alt" style="color:var(--p)"></i> <span data-i18n="edu.school.period" style="color:var(--t2)">2016 — 2025</span></p>
+        <p data-i18n="edu.school.subjects">Asosiy fanlar: Matematika, Fizika, Informatika, O'zbek tili va adabiyoti, Ingliz tili, Rus tili</p>
     </div>
-
-    <div class="card" style="margin-bottom:1.6rem">
-        <div class="card-header">
-            <i class="fas fa-laptop-code"></i>
-            <h3 data-i18n="edu.it.title">IT kurslari</h3>
-        </div>
-        <p style="margin-bottom:.6rem"><strong data-i18n="edu.it.name">IT o'quv markazi</strong></p>
-        <p style="color:var(--text-secondary);margin-bottom:.45rem"><i class="fas fa-calendar-alt"></i> <span data-i18n="edu.it.period">2024 — Hozirgacha</span></p>
-        <p style="color:var(--text-secondary);line-height:1.75" data-i18n="edu.it.subjects">O'rganilayotgan texnologiyalar: Python, HTML5, CSS3, JavaScript asoslari, Git, Web dizayn, Responsive Design</p>
+    <div class="card" style="margin-bottom:1.5rem">
+        <div class="ch"><i class="fas fa-laptop-code"></i><h3 data-i18n="edu.it.title">IT kurslari</h3></div>
+        <p style="margin-bottom:.55rem"><strong data-i18n="edu.it.name">IT o'quv markazi</strong></p>
+        <p style="margin-bottom:.4rem"><i class="fas fa-calendar-alt" style="color:var(--p)"></i> <span data-i18n="edu.it.period" style="color:var(--t2)">2024 — Hozirgacha</span></p>
+        <p data-i18n="edu.it.subjects">O'rganilayotgan texnologiyalar: Python, HTML5, CSS3, JavaScript asoslari, Git, Web dizayn, Responsive Design</p>
     </div>
-
-    <div class="card" style="margin-bottom:1.6rem">
-        <div class="card-header">
-            <i class="fas fa-graduation-cap"></i>
-            <h3 data-i18n="edu.poly.title">Texnikum ta'limi</h3>
-        </div>
-        <p style="margin-bottom:.6rem"><strong data-i18n="edu.poly.name">Politexnik texnikum</strong></p>
-        <p style="color:var(--text-secondary);margin-bottom:.45rem"><i class="fas fa-calendar-alt"></i> <span data-i18n="edu.poly.period">2025 — Hozirgacha</span></p>
-        <p style="color:var(--text-secondary);line-height:1.75" data-i18n="edu.poly.subjects">Yo'nalish: Axborot texnologiyalari, Dasturlash asoslari, Kompyuter tarmoqlari, Ma'lumotlar bazasi, Web texnologiyalari</p>
+    <div class="card" style="margin-bottom:1.5rem">
+        <div class="ch"><i class="fas fa-graduation-cap"></i><h3 data-i18n="edu.poly.title">Texnikum ta'limi</h3></div>
+        <p style="margin-bottom:.55rem"><strong data-i18n="edu.poly.name">Politexnik texnikum</strong></p>
+        <p style="margin-bottom:.4rem"><i class="fas fa-calendar-alt" style="color:var(--p)"></i> <span data-i18n="edu.poly.period" style="color:var(--t2)">2025 — Hozirgacha</span></p>
+        <p data-i18n="edu.poly.subjects">Yo'nalish: Axborot texnologiyalari, Dasturlash asoslari, Kompyuter tarmoqlari, Ma'lumotlar bazasi, Web texnologiyalari</p>
     </div>
-
     <div class="card">
-        <div class="card-header">
-            <i class="fas fa-brain"></i>
-            <h3 data-i18n="edu.softskills.title">Shaxsiy ko'nikmalar</h3>
-        </div>
-        <div class="skill-tags">
+        <div class="ch"><i class="fas fa-brain"></i><h3 data-i18n="edu.softskills.title">Shaxsiy ko'nikmalar</h3></div>
+        <div class="skt">
             <span class="tag" data-i18n="sk.selflearn">O'z-o'zini o'qitish</span>
             <span class="tag" data-i18n="sk.responsibility">Mas'uliyat</span>
             <span class="tag" data-i18n="sk.teamwork">Jamoa ishi</span>
@@ -1056,712 +290,194 @@
     </div>
 </section>
 
-<!-- ═══ PROJECTS ═══ -->
 <section id="projects">
-    <h2 class="section-title" data-i18n-html="proj.title_html">Loyi<span>halar</span></h2>
-    <div class="projects-grid">
-
-        <!-- Project 1 -->
-        <div class="project-card">
-            <div class="project-image"><i class="fas fa-calculator"></i></div>
-            <div class="project-content">
-                <h3 class="project-title" data-i18n="proj.p1.title">Kalkulyator dasturi</h3>
-                <p class="project-description" data-i18n="proj.p1.desc">Python tilida yaratilgan kalkulyator dasturi. Asosiy matematik amallarni bajarish imkonini beradi. Tkinter kutubxonasi bilan qulay grafik interfeysi.</p>
-                <div class="project-tags">
-                    <span class="project-tag">Python</span>
-                    <span class="project-tag">Tkinter</span>
-                    <span class="project-tag">GUI</span>
-                </div>
-                <div class="project-links">
-                    <a href="https://github.com/Navrozbek1" target="_blank" class="project-link">
-                        <i class="fab fa-github"></i><span data-i18n="proj.code">Kod</span>
-                    </a>
-                </div>
-            </div>
-        </div>
-
-        <!-- Project 2 -->
-        <div class="project-card">
-            <div class="project-image"><i class="fas fa-globe"></i></div>
-            <div class="project-content">
-                <h3 class="project-title" data-i18n="proj.p2.title">Shaxsiy veb-sayt</h3>
-                <p class="project-description" data-i18n="proj.p2.desc">HTML, CSS va JavaScript yordamida yaratilgan responsive shaxsiy veb-sayt. Zamonaviy dizayn va smooth animatsiyalar bilan bezatilgan.</p>
-                <div class="project-tags">
-                    <span class="project-tag">HTML5</span>
-                    <span class="project-tag">CSS3</span>
-                    <span class="project-tag">JavaScript</span>
-                    <span class="project-tag">Responsive</span>
-                </div>
-                <div class="project-links">
-                    <a href="https://github.com/Navrozbek1" target="_blank" class="project-link">
-                        <i class="fab fa-github"></i><span data-i18n="proj.code">Kod</span>
-                    </a>
-                </div>
-            </div>
-        </div>
-
-        <!-- Project 3 -->
-        <div class="project-card">
-            <div class="project-image"><i class="fas fa-database"></i></div>
-            <div class="project-content">
-                <h3 class="project-title" data-i18n="proj.p3.title">Vazifalar boshqaruv tizimi</h3>
-                <p class="project-description" data-i18n="proj.p3.desc">Python va SQLite yordamida yaratilgan vazifalar boshqaruv tizimi. Vazifalar qo'shish, o'chirish, yangilash va saqlash imkoniyati.</p>
-                <div class="project-tags">
-                    <span class="project-tag">Python</span>
-                    <span class="project-tag">SQLite</span>
-                    <span class="project-tag">CLI</span>
-                </div>
-                <div class="project-links">
-                    <a href="https://github.com/Navrozbek1" target="_blank" class="project-link">
-                        <i class="fab fa-github"></i><span data-i18n="proj.code">Kod</span>
-                    </a>
-                </div>
-            </div>
-        </div>
-
-        <!-- Project 4 — Math Cert Pro -->
-        <div class="project-card">
-            <div class="project-image"><i class="fas fa-certificate"></i></div>
-            <div class="project-content">
-                <h3 class="project-title" data-i18n="proj.p4.title">Math Cert Pro</h3>
-                <p class="project-description" data-i18n="proj.p4.desc">Test uchun ilova — matematika sertifikati imtihoniga tayyorlanish platformasi. Foydalanuvchilar interaktiv test savollarini yechib, o'z natijalarini kuzatishi mumkin. Talabalar uchun foydali va samarali qurol.</p>
-                <div class="project-tags">
-                    <span class="project-tag">Python</span>
-                    <span class="project-tag">Telegram Bot</span>
-                    <span class="project-tag">Test App</span>
-                </div>
-                <div class="project-links">
-                    <a href="https://github.com/Navrozbek1" target="_blank" class="project-link">
-                        <i class="fab fa-github"></i><span data-i18n="proj.code">Kod</span>
-                    </a>
-                </div>
-            </div>
-        </div>
-
-        <!-- Project 5 — BekRobot -->
-        <div class="project-card">
-            <div class="project-image"><i class="fas fa-robot"></i></div>
-            <div class="project-content">
-                <h3 class="project-title" data-i18n="proj.p5.title">BekRobot — AI Bot</h3>
-                <p class="project-description" data-i18n="proj.p5.desc">Telegram'da @BekRobot nomi bilan ishlaydigan sun'iy intellekt asosidagi bot. Foydalanuvchilarga savollarga javob berish, ma'lumot qidirish va kundalik vazifalarni avtomatlashtirish imkonini beradi. Python va zamonaviy AI texnologiyalari asosida qurilgan.</p>
-                <div class="project-tags">
-                    <span class="project-tag">Python</span>
-                    <span class="project-tag">AI</span>
-                    <span class="project-tag">Telegram Bot</span>
-                </div>
-                <div class="project-links">
-                    <a href="https://t.me/BekRobot" target="_blank" class="project-link">
-                        <i class="fab fa-telegram"></i><span data-i18n="proj.open_bot">Botga o'tish</span>
-                    </a>
-                </div>
-            </div>
-        </div>
-
+    <h2 class="st" data-i18n-html="proj.title_html">Loyi<span>halar</span></h2>
+    <div class="pg">
+        <div class="pc"><div class="pi"><i class="fas fa-calculator"></i></div><div class="pcon"><h3 class="pt2" data-i18n="proj.p1.title">Kalkulyator dasturi</h3><p class="pd" data-i18n="proj.p1.desc">Python tilida yaratilgan kalkulyator dasturi. Asosiy matematik amallarni bajarish imkonini beradi. Tkinter kutubxonasi bilan qulay grafik interfeysi.</p><div class="ptags"><span class="ptag">Python</span><span class="ptag">Tkinter</span><span class="ptag">GUI</span></div><div class="pl"><a href="https://github.com/Navrozbek1" target="_blank" class="plink"><i class="fab fa-github"></i><span data-i18n="proj.code">Kod</span></a></div></div></div>
+        <div class="pc"><div class="pi"><i class="fas fa-globe"></i></div><div class="pcon"><h3 class="pt2" data-i18n="proj.p2.title">Shaxsiy veb-sayt</h3><p class="pd" data-i18n="proj.p2.desc">HTML, CSS va JavaScript yordamida yaratilgan responsive shaxsiy veb-sayt. Zamonaviy dizayn va smooth animatsiyalar bilan bezatilgan.</p><div class="ptags"><span class="ptag">HTML5</span><span class="ptag">CSS3</span><span class="ptag">JavaScript</span><span class="ptag">Responsive</span></div><div class="pl"><a href="https://github.com/Navrozbek1" target="_blank" class="plink"><i class="fab fa-github"></i><span data-i18n="proj.code">Kod</span></a></div></div></div>
+        <div class="pc"><div class="pi"><i class="fas fa-database"></i></div><div class="pcon"><h3 class="pt2" data-i18n="proj.p3.title">Vazifalar boshqaruv tizimi</h3><p class="pd" data-i18n="proj.p3.desc">Python va SQLite yordamida yaratilgan vazifalar boshqaruv tizimi. Vazifalar qo'shish, o'chirish, yangilash va saqlash imkoniyati.</p><div class="ptags"><span class="ptag">Python</span><span class="ptag">SQLite</span><span class="ptag">CLI</span></div><div class="pl"><a href="https://github.com/Navrozbek1" target="_blank" class="plink"><i class="fab fa-github"></i><span data-i18n="proj.code">Kod</span></a></div></div></div>
+        <div class="pc"><div class="pi"><i class="fas fa-certificate"></i></div><div class="pcon"><h3 class="pt2" data-i18n="proj.p4.title">Math Cert Pro</h3><p class="pd" data-i18n="proj.p4.desc">Test uchun ilova — matematika sertifikati imtihoniga tayyorlanish platformasi. Foydalanuvchilar interaktiv test savollarini yechib, o'z natijalarini kuzatishi mumkin. Talabalar uchun foydali va samarali qurol.</p><div class="ptags"><span class="ptag">Python</span><span class="ptag">Telegram Bot</span><span class="ptag">Test App</span></div><div class="pl"><a href="https://github.com/Navrozbek1" target="_blank" class="plink"><i class="fab fa-github"></i><span data-i18n="proj.code">Kod</span></a></div></div></div>
+        <div class="pc"><div class="pi"><i class="fas fa-robot"></i></div><div class="pcon"><h3 class="pt2" data-i18n="proj.p5.title">BekRobot — AI Bot</h3><p class="pd" data-i18n="proj.p5.desc">Telegram'da @BekRobot nomi bilan ishlaydigan sun'iy intellekt asosidagi bot. Foydalanuvchilarga savollarga javob berish, ma'lumot qidirish va kundalik vazifalarni avtomatlashtirish imkonini beradi. Python va zamonaviy AI texnologiyalari asosida qurilgan.</p><div class="ptags"><span class="ptag">Python</span><span class="ptag">AI</span><span class="ptag">Telegram Bot</span></div><div class="pl"><a href="https://t.me/BekRobot" target="_blank" class="plink"><i class="fab fa-telegram"></i><span data-i18n="proj.open_bot">Botga o'tish</span></a></div></div></div>
     </div>
 </section>
 
-<!-- ═══ SKILLS ═══ -->
 <section id="skills">
-    <h2 class="section-title" data-i18n-html="skills.title_html">Ko'ni<span>kmalar</span></h2>
-
-    <div class="skill-category">
-        <h3 data-i18n="skills.cat1">Dasturlash tillari</h3>
-        <div class="skill-tags">
-            <span class="tag">Python</span>
-            <span class="tag">HTML5</span>
-            <span class="tag">CSS3</span>
-            <span class="tag">JavaScript</span>
-            <span class="tag">SQL</span>
-        </div>
-    </div>
-    <div class="skill-category">
-        <h3 data-i18n="skills.cat2">Web texnologiyalar</h3>
-        <div class="skill-tags">
-            <span class="tag">Responsive Design</span>
-            <span class="tag">Bootstrap</span>
-            <span class="tag">Git</span>
-            <span class="tag">GitHub</span>
-        </div>
-    </div>
-    <div class="skill-category">
-        <h3 data-i18n="skills.cat3">Framework va kutubxonalar</h3>
-        <div class="skill-tags">
-            <span class="tag">Django</span>
-            <span class="tag">Flask</span>
-            <span class="tag">Tkinter</span>
-            <span class="tag">aiogram</span>
-        </div>
-    </div>
-    <div class="skill-category">
-        <h3 data-i18n="skills.cat4">Dasturlash asboblari</h3>
-        <div class="skill-tags">
-            <span class="tag">VS Code</span>
-            <span class="tag">PyCharm</span>
-            <span class="tag">Git</span>
-            <span class="tag">GitHub</span>
-        </div>
-    </div>
-    <div class="skill-category">
-        <h3 data-i18n="skills.cat5">Ma'lumotlar bazasi</h3>
-        <div class="skill-tags">
-            <span class="tag">MySQL</span>
-            <span class="tag">PostgreSQL</span>
-            <span class="tag">SQLite</span>
-        </div>
-    </div>
-    <div class="skill-category">
-        <h3 data-i18n="skills.cat6">Shaxsiy ko'nikmalar</h3>
-        <div class="skill-tags">
-            <span class="tag" data-i18n="sk.teamwork">Jamoa ishi</span>
-            <span class="tag" data-i18n="sk.communication">Muloqot</span>
-            <span class="tag" data-i18n="sk.problemsolving">Muammolarni hal qilish</span>
-            <span class="tag" data-i18n="sk.creativity">Ijodkorlik</span>
-            <span class="tag" data-i18n="sk.selflearn">O'zini o'qitish</span>
-        </div>
-    </div>
+    <h2 class="st" data-i18n-html="skills.title_html">Ko'ni<span>kmalar</span></h2>
+    <div class="skc"><h3 data-i18n="skills.cat1">Dasturlash tillari</h3><div class="skt"><span class="tag">Python</span><span class="tag">HTML5</span><span class="tag">CSS3</span><span class="tag">JavaScript</span><span class="tag">SQL</span></div></div>
+    <div class="skc"><h3 data-i18n="skills.cat2">Web texnologiyalar</h3><div class="skt"><span class="tag">Responsive Design</span><span class="tag">Bootstrap</span><span class="tag">Git</span><span class="tag">GitHub</span></div></div>
+    <div class="skc"><h3 data-i18n="skills.cat3">Framework va kutubxonalar</h3><div class="skt"><span class="tag">Django</span><span class="tag">Flask</span><span class="tag">Tkinter</span><span class="tag">aiogram</span></div></div>
+    <div class="skc"><h3 data-i18n="skills.cat4">Dasturlash asboblari</h3><div class="skt"><span class="tag">VS Code</span><span class="tag">PyCharm</span><span class="tag">Git</span><span class="tag">GitHub</span></div></div>
+    <div class="skc"><h3 data-i18n="skills.cat5">Ma'lumotlar bazasi</h3><div class="skt"><span class="tag">MySQL</span><span class="tag">PostgreSQL</span><span class="tag">SQLite</span></div></div>
+    <div class="skc"><h3 data-i18n="skills.cat6">Shaxsiy ko'nikmalar</h3><div class="skt"><span class="tag" data-i18n="sk.teamwork">Jamoa ishi</span><span class="tag" data-i18n="sk.communication">Muloqot</span><span class="tag" data-i18n="sk.problemsolving">Muammolarni hal qilish</span><span class="tag" data-i18n="sk.creativity">Ijodkorlik</span><span class="tag" data-i18n="sk.selflearn">O'zini o'qitish</span></div></div>
 </section>
 
-<!-- ═══ CONTACT ═══ -->
 <section id="contact">
-    <h2 class="section-title" data-i18n-html="contact.title_html">Alo<span>qa</span></h2>
-    <div class="contact-container">
-
-        <!-- Contact cards (all full-link) -->
-        <div class="contact-cards">
-            <a href="mailto:navrozbekallamovv@gmail.com" class="contact-card">
-                <div class="contact-icon"><i class="fas fa-envelope"></i></div>
-                <div class="contact-info">
-                    <strong>Email</strong>
-                    <span>navrozbekallamovv@gmail.com</span>
-                </div>
-                <i class="fas fa-chevron-right contact-arrow"></i>
-            </a>
-
-            <a href="tel:+998943607585" class="contact-card">
-                <div class="contact-icon"><i class="fas fa-phone"></i></div>
-                <div class="contact-info">
-                    <strong data-i18n="contact.phone">Telefon</strong>
-                    <span>+998 94 360 75 85</span>
-                </div>
-                <i class="fas fa-chevron-right contact-arrow"></i>
-            </a>
-
-            <a href="https://t.me/Navrozbek_Allamov" target="_blank" class="contact-card">
-                <div class="contact-icon"><i class="fab fa-telegram"></i></div>
-                <div class="contact-info">
-                    <strong>Telegram</strong>
-                    <span>@Navrozbek_Allamov</span>
-                </div>
-                <i class="fas fa-chevron-right contact-arrow"></i>
-            </a>
-
-            <a href="https://instagram.com/navrozbek_allamov" target="_blank" class="contact-card">
-                <div class="contact-icon"><i class="fab fa-instagram"></i></div>
-                <div class="contact-info">
-                    <strong>Instagram</strong>
-                    <span>@navrozbek_allamov</span>
-                </div>
-                <i class="fas fa-chevron-right contact-arrow"></i>
-            </a>
-
-            <a href="https://github.com/Navrozbek1" target="_blank" class="contact-card">
-                <div class="contact-icon"><i class="fab fa-github"></i></div>
-                <div class="contact-info">
-                    <strong>GitHub</strong>
-                    <span>Navrozbek1</span>
-                </div>
-                <i class="fas fa-chevron-right contact-arrow"></i>
-            </a>
+    <h2 class="st" data-i18n-html="contact.title_html">Alo<span>qa</span></h2>
+    <div class="cc2">
+        <div class="ccs">
+            <a href="mailto:navrozbekallamovv@gmail.com" class="ccard"><div class="ci"><i class="fas fa-envelope"></i></div><div class="cinfo"><strong>Email</strong><span>navrozbekallamovv@gmail.com</span></div><i class="fas fa-chevron-right ca"></i></a>
+            <a href="tel:+998943607585" class="ccard"><div class="ci"><i class="fas fa-phone"></i></div><div class="cinfo"><strong data-i18n="contact.phone">Telefon</strong><span>+998 94 360 75 85</span></div><i class="fas fa-chevron-right ca"></i></a>
+            <a href="https://t.me/Navrozbek_Allamov" target="_blank" class="ccard"><div class="ci"><i class="fab fa-telegram"></i></div><div class="cinfo"><strong>Telegram</strong><span>@Navrozbek_Allamov</span></div><i class="fas fa-chevron-right ca"></i></a>
+            <a href="https://instagram.com/navrozbek_allamov" target="_blank" class="ccard"><div class="ci"><i class="fab fa-instagram"></i></div><div class="cinfo"><strong>Instagram</strong><span>@navrozbek_allamov</span></div><i class="fas fa-chevron-right ca"></i></a>
+            <a href="https://github.com/Navrozbek1" target="_blank" class="ccard"><div class="ci"><i class="fab fa-github"></i></div><div class="cinfo"><strong>GitHub</strong><span>Navrozbek1</span></div><i class="fas fa-chevron-right ca"></i></a>
         </div>
-
-        <!-- Contact form -->
-        <div class="contact-form-panel">
+        <div class="cfp">
             <h3 data-i18n="contact.form.title">Menga xabar yuboring</h3>
-            <form class="contact-form" onsubmit="handleFormSubmit(event)">
-                <div>
-                    <label for="name" data-i18n="contact.form.name">To'liq ism</label>
-                    <input id="name" name="name" type="text" required data-i18n-ph="contact.form.name_ph" placeholder="Sizning ismingiz">
-                </div>
-                <div>
-                    <label for="email" data-i18n="contact.form.email">Elektron pochta</label>
-                    <input id="email" name="email" type="email" required data-i18n-ph="contact.form.email_ph" placeholder="Email manzilingiz">
-                </div>
-                <div>
-                    <label for="message" data-i18n="contact.form.message">Xabar</label>
-                    <textarea id="message" name="message" rows="4" required data-i18n-ph="contact.form.message_ph" placeholder="Xabaringizni yozing..."></textarea>
-                </div>
-                <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center">
-                    <i class="fas fa-paper-plane"></i>
-                    <span data-i18n="contact.form.send">Yuborish</span>
-                </button>
+            <form class="cf" onsubmit="fs2(event)">
+                <div><label for="name" data-i18n="contact.form.name">To'liq ism</label><input id="name" name="name" type="text" required data-i18n-ph="contact.form.name_ph" placeholder="Sizning ismingiz"></div>
+                <div><label for="email" data-i18n="contact.form.email">Elektron pochta</label><input id="email" name="email" type="email" required data-i18n-ph="contact.form.email_ph" placeholder="Email manzilingiz"></div>
+                <div><label for="message" data-i18n="contact.form.message">Xabar</label><textarea id="message" name="message" rows="4" required data-i18n-ph="contact.form.message_ph" placeholder="Xabaringizni yozing..."></textarea></div>
+                <button type="submit" class="btn bp" style="width:100%;justify-content:center"><i class="fas fa-paper-plane"></i><span data-i18n="contact.form.send">Yuborish</span></button>
             </form>
-            <div id="formMessage" class="form-message"></div>
+            <div id="fm" class="fm"></div>
         </div>
     </div>
 </section>
 
-<!-- ═══ FOOTER ═══ -->
 <footer>
-    <div class="footer-social">
-        <a href="https://github.com/Navrozbek1"              target="_blank" title="GitHub">    <i class="fab fa-github"></i></a>
-        <a href="https://t.me/Navrozbek_Allamov"             target="_blank" title="Telegram">  <i class="fab fa-telegram"></i></a>
-        <a href="https://instagram.com/navrozbek_allamov"    target="_blank" title="Instagram"> <i class="fab fa-instagram"></i></a>
-        <a href="mailto:navrozbekallamovv@gmail.com"                          title="Email">     <i class="fas fa-envelope"></i></a>
+    <div class="fs">
+        <a href="https://github.com/Navrozbek1" target="_blank"><i class="fab fa-github"></i></a>
+        <a href="https://t.me/Navrozbek_Allamov" target="_blank"><i class="fab fa-telegram"></i></a>
+        <a href="https://instagram.com/navrozbek_allamov" target="_blank"><i class="fab fa-instagram"></i></a>
+        <a href="mailto:navrozbekallamovv@gmail.com"><i class="fas fa-envelope"></i></a>
     </div>
-    <div class="footer-links">
-        <a href="#home"      onclick="scrollToSection('home')"      data-i18n="nav.home">Bosh sahifa</a>
-        <a href="#about"     onclick="scrollToSection('about')"     data-i18n="nav.about">Men haqimda</a>
-        <a href="#education" onclick="scrollToSection('education')" data-i18n="nav.education">Ta'lim</a>
-        <a href="#projects"  onclick="scrollToSection('projects')"  data-i18n="nav.projects">Loyihalar</a>
-        <a href="#skills"    onclick="scrollToSection('skills')"    data-i18n="nav.skills">Ko'nikmalar</a>
-        <a href="#contact"   onclick="scrollToSection('contact')"   data-i18n="nav.contact">Aloqa</a>
+    <div class="fl">
+        <a href="#home"      onclick="go('home')"      data-i18n="nav.home">Bosh sahifa</a>
+        <a href="#about"     onclick="go('about')"     data-i18n="nav.about">Men haqimda</a>
+        <a href="#education" onclick="go('education')" data-i18n="nav.education">Ta'lim</a>
+        <a href="#projects"  onclick="go('projects')"  data-i18n="nav.projects">Loyihalar</a>
+        <a href="#skills"    onclick="go('skills')"    data-i18n="nav.skills">Ko'nikmalar</a>
+        <a href="#contact"   onclick="go('contact')"   data-i18n="nav.contact">Aloqa</a>
     </div>
-    <p class="footer-copyright">© <span id="year"></span> Navrozbek.uz — Allamov Navrozbek</p>
+    <p class="fc">© <span id="yr"></span> Navrozbek.uz — Allamov Navrozbek</p>
 </footer>
-
-<div class="scroll-to-top" id="scrollToTop" onclick="scrollToSection('home')">
-    <i class="fas fa-arrow-up"></i>
-</div>
+<div class="stt" id="stt" onclick="go('home')"><i class="fas fa-arrow-up"></i></div>
 
 <script>
-/* ═══════════════════════════════════════════
-   TRANSLATIONS — full i18n for all 3 languages
-═══════════════════════════════════════════ */
-const translations = {
-    uz: {
-        // Nav
-        'nav.home': 'Bosh sahifa',
-        'nav.about': 'Men haqimda',
-        'nav.education': "Ta'lim",
-        'nav.projects': 'Loyihalar',
-        'nav.skills': "Ko'nikmalar",
-        'nav.contact': 'Aloqa',
-
-        // Hero
-        'hero.status': "O'qimoqdaman va rivojlanmoqdaman",
-        'hero.name': 'Allamov Navrozbek',
-        'hero.role': "IT o'quvchisi",
-        'hero.subtitle': 'Python • HTML • CSS',
-        'hero.description': "Zamonaviy, minimalistik va tezkor veb-sahifalar yaratishni o'rganmoqdaman. Maqsadim — toza kod, foydalanuvchi uchun qulay interfeys va barqaror natija.",
-        'hero.cta_projects': "Loyihalarni ko'rish",
-        'hero.cta_contact': "Bog'lanish",
-
-        // Stats
-        'stat.school': 'Maktab',
-        'stat.it': 'IT kurslari',
-        'stat.poly': 'Politexnikum',
-
-        // About
-        'about.title_html': 'Men <span>haqimda</span>',
-        'about.intro1': "Men Allamov Navrozbekman — IT yo'nalishida tahsil olayotgan o'quvchiman. Python, HTML va CSS asoslarini o'rganib, amaliy loyihalar bilan tajriba to'plamoqdaman.",
-        'about.intro2': "Hozirda maktabda o'qib, bir vaqtning o'zida IT kurslarida qatnashib, Politexnik texnikumda ham ta'lim olib kelayotganman. Dasturlash sohasida yangi bilimlar olish va amaliy loyihalar yaratishga qiziqaman.",
-        'about.intro3': "Maqsadim: professional dasturchi bo'lib, IT sohasida muvaffaqiyatli ishlash va o'z bilimlarimni doimiy ravishda yangilab borish.",
-        'about.card1.title': "Ta'lim yo'nalishi",
-        'about.card1.text': "IT sohasida chuqur bilim olish va zamonaviy texnologiyalarni o'rganish. Python, HTML, CSS va JavaScript asoslarini o'rganib, web dasturlash sohasida professional bo'lish.",
-        'about.card2.title': 'Dasturlash',
-        'about.card2.text': "Python dasturlash tilini o'rganib, algoritmlar va ma'lumotlar tuzilmalari bilan ishlash. HTML va CSS yordamida zamonaviy web-sahifalar yaratish.",
-        'about.card3.title': 'Maqsadlar',
-        'about.card3.text': "Professional dasturchi bo'lib, katta loyihalarda ishlash. IT sohasida muvaffaqiyatli karyera qilish va o'z bilimlarimni doimiy yangilab borish.",
-        'about.card4.title': 'Qiziqishlar',
-        'about.card4.text': "Dasturlash, web dizayn, yangi texnologiyalar, o'qish va o'zini rivojlantirish. IT sohasidagi yangi tendentsiyalar va innovatsiyalar.",
-
-        // Education
-        'edu.title_html': "Ta'<span>lim</span>",
-        'edu.school.title': "Maktab ta'limi",
-        'edu.school.name': 'Toshkent shahri maktabi',
-        'edu.school.period': '2016 — 2025',
-        'edu.school.subjects': "Asosiy fanlar: Matematika, Fizika, Informatika, O'zbek tili va adabiyoti, Ingliz tili, Rus tili",
-        'edu.it.title': 'IT kurslari',
-        'edu.it.name': "IT o'quv markazi",
-        'edu.it.period': '2024 — Hozirgacha',
-        'edu.it.subjects': "O'rganilayotgan texnologiyalar: Python, HTML5, CSS3, JavaScript asoslari, Git, Web dizayn, Responsive Design",
-        'edu.poly.title': "Texnikum ta'limi",
-        'edu.poly.name': 'Politexnik texnikum',
-        'edu.poly.period': '2025 — Hozirgacha',
-        'edu.poly.subjects': "Yo'nalish: Axborot texnologiyalari, Dasturlash asoslari, Kompyuter tarmoqlari, Ma'lumotlar bazasi, Web texnologiyalari",
-        'edu.softskills.title': "Shaxsiy ko'nikmalar",
-
-        // Soft skills
-        'sk.selflearn': "O'z-o'zini o'qitish",
-        'sk.responsibility': "Mas'uliyat",
-        'sk.teamwork': 'Jamoa ishi',
-        'sk.problemsolving': 'Muammolarni hal qilish',
-        'sk.creativity': 'Ijodkorlik',
-        'sk.timemanagement': 'Vaqtni boshqarish',
-        'sk.communication': 'Muloqot',
-        'sk.adaptability': 'Moslashuvchanlik',
-        'sk.attention': 'Diqqat',
-        'sk.selfdevelopment': "O'zini rivojlantirish",
-
-        // Projects
-        'proj.title_html': "Loyi<span>halar</span>",
-        'proj.p1.title': 'Kalkulyator dasturi',
-        'proj.p1.desc': "Python tilida yaratilgan kalkulyator dasturi. Asosiy matematik amallarni bajarish imkonini beradi. Tkinter kutubxonasi bilan qulay grafik interfeysi.",
-        'proj.p2.title': 'Shaxsiy veb-sayt',
-        'proj.p2.desc': "HTML, CSS va JavaScript yordamida yaratilgan responsive shaxsiy veb-sayt. Zamonaviy dizayn va smooth animatsiyalar bilan bezatilgan.",
-        'proj.p3.title': 'Vazifalar boshqaruv tizimi',
-        'proj.p3.desc': "Python va SQLite yordamida yaratilgan vazifalar boshqaruv tizimi. Vazifalar qo'shish, o'chirish, yangilash va saqlash imkoniyati.",
-        'proj.p4.title': 'Math Cert Pro',
-        'proj.p4.desc': "Test uchun ilova — matematika sertifikati imtihoniga tayyorlanish platformasi. Foydalanuvchilar interaktiv test savollarini yechib, o'z natijalarini kuzatishi mumkin. Talabalar uchun foydali va samarali qurol.",
-        'proj.p5.title': 'BekRobot — AI Bot',
-        'proj.p5.desc': "Telegram'da @BekRobot nomi bilan ishlaydigan sun'iy intellekt asosidagi bot. Foydalanuvchilarga savollarga javob berish, ma'lumot qidirish va kundalik vazifalarni avtomatlashtirish imkonini beradi. Python va zamonaviy AI texnologiyalari asosida qurilgan.",
-        'proj.code': 'Kod',
-        'proj.open_bot': "Botga o'tish",
-
-        // Skills
-        'skills.title_html': "Ko'ni<span>kmalar</span>",
-        'skills.cat1': 'Dasturlash tillari',
-        'skills.cat2': 'Web texnologiyalar',
-        'skills.cat3': 'Framework va kutubxonalar',
-        'skills.cat4': 'Dasturlash asboblari',
-        'skills.cat5': "Ma'lumotlar bazasi",
-        'skills.cat6': "Shaxsiy ko'nikmalar",
-
-        // Contact
-        'contact.title_html': "Alo<span>qa</span>",
-        'contact.phone': 'Telefon',
-        'contact.form.title': 'Menga xabar yuboring',
-        'contact.form.name': "To'liq ism",
-        'contact.form.name_ph': 'Sizning ismingiz',
-        'contact.form.email': 'Elektron pochta',
-        'contact.form.email_ph': 'Email manzilingiz',
-        'contact.form.message': 'Xabar',
-        'contact.form.message_ph': "Xabaringizni yozing...",
-        'contact.form.send': 'Yuborish',
-        'contact.form.success': "Xabaringiz yuborildi. Rahmat!",
-    },
-
-    en: {
-        'nav.home': 'Home',
-        'nav.about': 'About',
-        'nav.education': 'Education',
-        'nav.projects': 'Projects',
-        'nav.skills': 'Skills',
-        'nav.contact': 'Contact',
-
-        'hero.status': 'Currently learning & growing',
-        'hero.name': 'Allamov Navrozbek',
-        'hero.role': 'IT Student',
-        'hero.subtitle': 'Python • HTML • CSS',
-        'hero.description': "Learning to build modern, minimalist, and fast web pages. My goal is clean code, user-friendly interfaces, and reliable results.",
-        'hero.cta_projects': 'View Projects',
-        'hero.cta_contact': 'Contact Me',
-
-        'stat.school': 'School',
-        'stat.it': 'IT Courses',
-        'stat.poly': 'Polytechnic',
-
-        'about.title_html': 'About <span>Me</span>',
-        'about.intro1': "I'm Allamov Navrozbek — a student studying IT. I'm learning Python, HTML and CSS, and building practical projects to gain experience.",
-        'about.intro2': "Currently attending school, IT courses, and Polytechnic College simultaneously. I'm passionate about learning new programming skills and creating practical projects.",
-        'about.intro3': "My goal: to become a professional developer, work successfully in IT, and continuously update my knowledge.",
-        'about.card1.title': 'Learning Path',
-        'about.card1.text': "Gaining deep knowledge in IT and learning modern technologies. Becoming professional in web development with Python, HTML, CSS and JavaScript.",
-        'about.card2.title': 'Programming',
-        'about.card2.text': "Learning Python programming, working with algorithms and data structures. Creating modern web pages with HTML and CSS.",
-        'about.card3.title': 'Goals',
-        'about.card3.text': "Becoming a professional developer and working on large projects. Building a successful IT career and continuously updating my skills.",
-        'about.card4.title': 'Interests',
-        'about.card4.text': "Programming, web design, new technologies, reading and self-development. New trends and innovations in IT.",
-
-        'edu.title_html': "Edu<span>cation</span>",
-        'edu.school.title': 'School Education',
-        'edu.school.name': 'Tashkent City School',
-        'edu.school.period': '2016 — 2025',
-        'edu.school.subjects': 'Main subjects: Mathematics, Physics, Computer Science, Uzbek Language & Literature, English, Russian',
-        'edu.it.title': 'IT Courses',
-        'edu.it.name': 'IT Learning Center',
-        'edu.it.period': '2024 — Present',
-        'edu.it.subjects': 'Technologies: Python, HTML5, CSS3, JavaScript basics, Git, Web Design, Responsive Design',
-        'edu.poly.title': 'Polytechnic Education',
-        'edu.poly.name': 'Polytechnic College',
-        'edu.poly.period': '2025 — Present',
-        'edu.poly.subjects': 'Major: Information Technologies, Programming Basics, Computer Networks, Database, Web Technologies',
-        'edu.softskills.title': 'Soft Skills',
-
-        'sk.selflearn': 'Self-learning',
-        'sk.responsibility': 'Responsibility',
-        'sk.teamwork': 'Teamwork',
-        'sk.problemsolving': 'Problem Solving',
-        'sk.creativity': 'Creativity',
-        'sk.timemanagement': 'Time Management',
-        'sk.communication': 'Communication',
-        'sk.adaptability': 'Adaptability',
-        'sk.attention': 'Attention to Detail',
-        'sk.selfdevelopment': 'Self-Development',
-
-        'proj.title_html': "Pro<span>jects</span>",
-        'proj.p1.title': 'Calculator App',
-        'proj.p1.desc': "Calculator app built in Python. Supports all basic arithmetic operations with a user-friendly GUI built using the Tkinter library.",
-        'proj.p2.title': 'Personal Website',
-        'proj.p2.desc': "Responsive personal website built with HTML, CSS and JavaScript. Modern design with smooth animations and clean layout.",
-        'proj.p3.title': 'Task Manager',
-        'proj.p3.desc': "Task management system built with Python and SQLite. Supports adding, deleting, updating and saving tasks persistently.",
-        'proj.p4.title': 'Math Cert Pro',
-        'proj.p4.desc': "Test preparation app — a platform for preparing for math certification exams. Users can solve interactive test questions and track their results. A useful and efficient tool for students.",
-        'proj.p5.title': 'BekRobot — AI Bot',
-        'proj.p5.desc': "An AI-powered Telegram bot running as @BekRobot. Helps users get answers to questions, search for information, and automate everyday tasks. Built with Python and modern AI technologies.",
-        'proj.code': 'Code',
-        'proj.open_bot': 'Open Bot',
-
-        'skills.title_html': "My <span>Skills</span>",
-        'skills.cat1': 'Programming Languages',
-        'skills.cat2': 'Web Technologies',
-        'skills.cat3': 'Frameworks & Libraries',
-        'skills.cat4': 'Development Tools',
-        'skills.cat5': 'Databases',
-        'skills.cat6': 'Soft Skills',
-
-        'contact.title_html': "Con<span>tact</span>",
-        'contact.phone': 'Phone',
-        'contact.form.title': 'Send Me a Message',
-        'contact.form.name': 'Full Name',
-        'contact.form.name_ph': 'Your name',
-        'contact.form.email': 'Email Address',
-        'contact.form.email_ph': 'Your email',
-        'contact.form.message': 'Message',
-        'contact.form.message_ph': 'Write your message...',
-        'contact.form.send': 'Send Message',
-        'contact.form.success': 'Your message has been sent. Thank you!',
-    },
-
-    ru: {
-        'nav.home': 'Главная',
-        'nav.about': 'Обо мне',
-        'nav.education': 'Образование',
-        'nav.projects': 'Проекты',
-        'nav.skills': 'Навыки',
-        'nav.contact': 'Контакты',
-
-        'hero.status': 'Учусь и развиваюсь',
-        'hero.name': 'Алламов Навруз',
-        'hero.role': 'IT студент',
-        'hero.subtitle': 'Python • HTML • CSS',
-        'hero.description': "Изучаю создание современных, минималистичных и быстрых веб-сайтов. Моя цель — чистый код, удобный интерфейс и надёжный результат.",
-        'hero.cta_projects': 'Смотреть проекты',
-        'hero.cta_contact': 'Связаться',
-
-        'stat.school': 'Школа',
-        'stat.it': 'IT курсы',
-        'stat.poly': 'Политехникум',
-
-        'about.title_html': 'Обо <span>мне</span>',
-        'about.intro1': "Я Алламов Навруз — студент, изучающий IT. Осваиваю Python, HTML и CSS, создаю практические проекты для получения опыта.",
-        'about.intro2': "Сейчас одновременно учусь в школе, посещаю IT курсы и Политехнический колледж. Увлечён программированием и созданием практических проектов.",
-        'about.intro3': "Моя цель: стать профессиональным разработчиком, успешно работать в IT и постоянно обновлять свои знания.",
-        'about.card1.title': 'Направление обучения',
-        'about.card1.text': "Получение глубоких знаний в IT и освоение современных технологий. Профессиональное развитие в веб-разработке с Python, HTML, CSS и JavaScript.",
-        'about.card2.title': 'Программирование',
-        'about.card2.text': "Изучаю Python, работаю с алгоритмами и структурами данных. Создаю современные веб-страницы с помощью HTML и CSS.",
-        'about.card3.title': 'Цели',
-        'about.card3.text': "Стать профессиональным разработчиком, работать над крупными проектами. Построить успешную карьеру в IT и постоянно совершенствовать навыки.",
-        'about.card4.title': 'Интересы',
-        'about.card4.text': "Программирование, веб-дизайн, новые технологии, чтение и саморазвитие. Тренды и инновации в сфере IT.",
-
-        'edu.title_html': "Обра<span>зование</span>",
-        'edu.school.title': 'Школьное образование',
-        'edu.school.name': 'Школа г. Ташкента',
-        'edu.school.period': '2016 — 2025',
-        'edu.school.subjects': 'Основные предметы: Математика, Физика, Информатика, Узбекский язык и литература, Английский язык, Русский язык',
-        'edu.it.title': 'IT Курсы',
-        'edu.it.name': 'IT Учебный центр',
-        'edu.it.period': '2024 — По настоящее время',
-        'edu.it.subjects': 'Технологии: Python, HTML5, CSS3, основы JavaScript, Git, Веб-дизайн, Адаптивный дизайн',
-        'edu.poly.title': 'Политехническое образование',
-        'edu.poly.name': 'Политехнический колледж',
-        'edu.poly.period': '2025 — По настоящее время',
-        'edu.poly.subjects': 'Направление: Информационные технологии, Основы программирования, Компьютерные сети, Базы данных, Веб-технологии',
-        'edu.softskills.title': 'Личные навыки',
-
-        'sk.selflearn': 'Самообучение',
-        'sk.responsibility': 'Ответственность',
-        'sk.teamwork': 'Командная работа',
-        'sk.problemsolving': 'Решение проблем',
-        'sk.creativity': 'Креативность',
-        'sk.timemanagement': 'Тайм-менеджмент',
-        'sk.communication': 'Коммуникация',
-        'sk.adaptability': 'Адаптивность',
-        'sk.attention': 'Внимательность',
-        'sk.selfdevelopment': 'Саморазвитие',
-
-        'proj.title_html': "Про<span>екты</span>",
-        'proj.p1.title': 'Калькулятор',
-        'proj.p1.desc': "Приложение-калькулятор на Python. Поддерживает основные арифметические операции с удобным графическим интерфейсом на Tkinter.",
-        'proj.p2.title': 'Личный сайт',
-        'proj.p2.desc': "Адаптивный персональный веб-сайт на HTML, CSS и JavaScript. Современный дизайн с плавными анимациями и чистой структурой.",
-        'proj.p3.title': 'Менеджер задач',
-        'proj.p3.desc': "Система управления задачами на Python и SQLite. Добавление, удаление, обновление и постоянное хранение задач.",
-        'proj.p4.title': 'Math Cert Pro',
-        'proj.p4.desc': "Приложение для тестирования — платформа для подготовки к экзамену по математическому сертификату. Пользователи решают интерактивные тесты и отслеживают свои результаты.",
-        'proj.p5.title': 'BekRobot — AI Бот',
-        'proj.p5.desc': "AI-бот в Telegram под именем @BekRobot. Помогает пользователям получать ответы на вопросы, искать информацию и автоматизировать повседневные задачи. Создан на Python с использованием современных AI-технологий.",
-        'proj.code': 'Код',
-        'proj.open_bot': 'Открыть бота',
-
-        'skills.title_html': "На<span>выки</span>",
-        'skills.cat1': 'Языки программирования',
-        'skills.cat2': 'Веб-технологии',
-        'skills.cat3': 'Фреймворки и библиотеки',
-        'skills.cat4': 'Инструменты разработки',
-        'skills.cat5': 'Базы данных',
-        'skills.cat6': 'Личные качества',
-
-        'contact.title_html': "Кон<span>такты</span>",
-        'contact.phone': 'Телефон',
-        'contact.form.title': 'Написать мне',
-        'contact.form.name': 'Полное имя',
-        'contact.form.name_ph': 'Ваше имя',
-        'contact.form.email': 'Электронная почта',
-        'contact.form.email_ph': 'Ваш email',
-        'contact.form.message': 'Сообщение',
-        'contact.form.message_ph': 'Напишите ваше сообщение...',
-        'contact.form.send': 'Отправить',
-        'contact.form.success': 'Ваше сообщение отправлено. Спасибо!',
+/* ── CIRCUIT CANVAS ── */
+(function(){
+    const cv=document.getElementById('cc'),cx=cv.getContext('2d');
+    let W,H,nd,pu;
+    const G='rgba(34,197,94,';
+    function rsz(){W=cv.width=innerWidth;H=cv.height=innerHeight;build()}
+    function build(){
+        nd=[];pu=[];
+        const cs=Math.ceil(W/80)+1,rs=Math.ceil(H/80)+1;
+        for(let r=0;r<rs;r++)for(let c=0;c<cs;c++)nd.push({x:c*80+(Math.random()-.5)*18,y:r*80+(Math.random()-.5)*18});
+        const ed=[];
+        for(let i=0;i<nd.length;i++){
+            const r=Math.floor(i/cs),c=i%cs;
+            if(c<cs-1)ed.push([i,i+1]);
+            if(r<rs-1)ed.push([i,i+cs]);
+            if(Math.random()<.07&&c<cs-1&&r<rs-1)ed.push([i,i+cs+1]);
+        }
+        nd.ed=ed;
+        function sp(){if(!ed.length)return;const e=ed[Math.floor(Math.random()*ed.length)];pu.push({e,t:0,spd:.004+Math.random()*.006})}
+        for(let i=0;i<18;i++)sp();
+        nd.sp=sp;
     }
-};
-
-/* ═══════════════════════════════════════════
-   LANGUAGE ENGINE
-═══════════════════════════════════════════ */
-let currentLanguage = localStorage.getItem('language') || 'uz';
-
-function changeLanguage(lang) {
-    currentLanguage = lang;
-    localStorage.setItem('language', lang);
-    document.documentElement.lang = lang;
-    document.getElementById('current-lang').textContent = lang.toUpperCase();
-
-    document.querySelectorAll('.language-option').forEach(opt =>
-        opt.classList.toggle('active', opt.getAttribute('data-lang') === lang)
-    );
-    document.getElementById('languageDropdown').classList.remove('active');
-
-    const dict = translations[lang] || translations.uz;
-
-    // textContent
-    document.querySelectorAll('[data-i18n]').forEach(el => {
-        const v = dict[el.getAttribute('data-i18n')];
-        if (v !== undefined) el.textContent = v;
-    });
-
-    // innerHTML (section titles with <span>)
-    document.querySelectorAll('[data-i18n-html]').forEach(el => {
-        const v = dict[el.getAttribute('data-i18n-html')];
-        if (v !== undefined) el.innerHTML = v;
-    });
-
-    // placeholders
-    document.querySelectorAll('[data-i18n-ph]').forEach(el => {
-        const v = dict[el.getAttribute('data-i18n-ph')];
-        if (v !== undefined) el.placeholder = v;
-    });
-}
-
-function toggleLanguageDropdown() {
-    document.getElementById('languageDropdown').classList.toggle('active');
-}
-
-/* ═══════════════════════════════════════════
-   THEME
-═══════════════════════════════════════════ */
-function toggleTheme() {
-    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-    if (isDark) {
-        document.documentElement.removeAttribute('data-theme');
-        document.getElementById('theme-icon').className = 'fas fa-moon';
-        localStorage.setItem('theme', 'light');
-    } else {
-        document.documentElement.setAttribute('data-theme', 'dark');
-        document.getElementById('theme-icon').className = 'fas fa-sun';
-        localStorage.setItem('theme', 'dark');
+    function draw(){
+        cx.clearRect(0,0,W,H);
+        const dk=document.documentElement.getAttribute('data-theme')!=='light';
+        if(dk){
+            const g=cx.createRadialGradient(W*.5,H*.3,0,W*.5,H*.5,W*.8);
+            g.addColorStop(0,'#051208');g.addColorStop(1,'#020c06');
+            cx.fillStyle=g;cx.fillRect(0,0,W,H);
+        }
+        if(!nd||!nd.ed)return;
+        nd.ed.forEach(([a,b])=>{
+            const na=nd[a],nb=nd[b];if(!na||!nb)return;
+            cx.beginPath();cx.moveTo(na.x,na.y);cx.lineTo(nb.x,nb.y);
+            cx.strokeStyle=G+(dk?'.06)':'.04)');cx.lineWidth=1;cx.stroke();
+        });
+        nd.forEach(n=>{cx.beginPath();cx.arc(n.x,n.y,2,0,Math.PI*2);cx.fillStyle=G+(dk?'.18)':'.1)');cx.fill()});
+        for(let i=pu.length-1;i>=0;i--){
+            const p=pu[i];const[a,b]=p.e;const na=nd[a],nb=nd[b];
+            if(!na||!nb){pu.splice(i,1);continue}
+            const x=na.x+(nb.x-na.x)*p.t,y=na.y+(nb.y-na.y)*p.t;
+            const gd=cx.createRadialGradient(x,y,0,x,y,12);
+            gd.addColorStop(0,G+'.9)');gd.addColorStop(.5,G+'.3)');gd.addColorStop(1,G+'0)');
+            cx.beginPath();cx.arc(x,y,12,0,Math.PI*2);cx.fillStyle=gd;cx.fill();
+            cx.beginPath();cx.arc(x,y,3,0,Math.PI*2);cx.fillStyle='#22c55e';cx.fill();
+            const tx=na.x+(nb.x-na.x)*Math.max(0,p.t-.12),ty=na.y+(nb.y-na.y)*Math.max(0,p.t-.12);
+            cx.beginPath();cx.moveTo(tx,ty);cx.lineTo(x,y);cx.strokeStyle=G+'.5)';cx.lineWidth=1.5;cx.stroke();
+            p.t+=p.spd;
+            if(p.t>=1){pu.splice(i,1);nd.sp()}
+        }
+        requestAnimationFrame(draw);
     }
-}
+    window.addEventListener('resize',rsz);rsz();draw();
+})();
 
-(function initTheme() {
-    if (localStorage.getItem('theme') === 'dark') {
-        document.documentElement.setAttribute('data-theme', 'dark');
-        document.getElementById('theme-icon').className = 'fas fa-sun';
+/* ── PARTICLES ── */
+(function(){
+    const c=document.getElementById('pts');
+    for(let i=0;i<22;i++){
+        const p=document.createElement('div');p.className='pt';
+        const s=Math.random()*3+1;
+        p.style.cssText=`width:${s}px;height:${s}px;left:${Math.random()*100}%;bottom:${Math.random()*-20}%;animation-duration:${8+Math.random()*14}s;animation-delay:${Math.random()*-12}s;opacity:.5`;
+        c.appendChild(p);
     }
 })();
 
-/* ═══════════════════════════════════════════
-   NAV & SCROLL
-═══════════════════════════════════════════ */
-function scrollToSection(id) {
-    const el = document.getElementById(id);
-    if (el) {
-        el.scrollIntoView({ behavior: 'smooth' });
-        document.getElementById('navMenu').classList.remove('active');
-    }
-}
+/* ── TRANSLATIONS ── */
+const T={
+uz:{'nav.home':'Bosh sahifa','nav.about':'Men haqimda','nav.education':"Ta'lim",'nav.projects':'Loyihalar','nav.skills':"Ko'nikmalar",'nav.contact':'Aloqa','hero.status':"O'qimoqdaman va rivojlanmoqdaman",'hero.name':'Allamov Navrozbek','hero.role':"IT o'quvchisi",'hero.subtitle':'Python • HTML • CSS','hero.description':"Zamonaviy, minimalistik va tezkor veb-sahifalar yaratishni o'rganmoqdaman. Maqsadim — toza kod, foydalanuvchi uchun qulay interfeys va barqaror natija.",'hero.cta_projects':"Loyihalarni ko'rish",'hero.cta_contact':"Bog'lanish",'stat.school':'Maktab','stat.it':'IT kurslari','stat.poly':'Politexnikum','about.title_html':'Men <span>haqimda</span>','about.intro1':"Men Allamov Navrozbekman — IT yo'nalishida tahsil olayotgan o'quvchiman. Python, HTML va CSS asoslarini o'rganib, amaliy loyihalar bilan tajriba to'plamoqdaman.",'about.intro2':"Hozirda maktabda o'qib, bir vaqtning o'zida IT kurslarida qatnashib, Politexnik texnikumda ham ta'lim olib kelayotganman.",'about.intro3':"Maqsadim: professional dasturchi bo'lib, IT sohasida muvaffaqiyatli ishlash va o'z bilimlarimni doimiy ravishda yangilab borish.",'about.card1.title':"Ta'lim yo'nalishi",'about.card1.text':"IT sohasida chuqur bilim olish. Python, HTML, CSS va JavaScript asoslarini o'rganib, professional bo'lish.",'about.card2.title':'Dasturlash','about.card2.text':"Python tilini o'rganib, algoritmlar bilan ishlash. HTML va CSS yordamida zamonaviy web-sahifalar yaratish.",'about.card3.title':'Maqsadlar','about.card3.text':"Professional dasturchi bo'lib, katta loyihalarda ishlash va IT sohasida muvaffaqiyatli karyera qilish.",'about.card4.title':'Qiziqishlar','about.card4.text':"Dasturlash, web dizayn, yangi texnologiyalar va IT sohasidagi innovatsiyalar.",'edu.title_html':"Ta'<span>lim</span>",'edu.school.title':"Maktab ta'limi",'edu.school.name':'Toshkent shahri maktabi','edu.school.period':'2016 — 2025','edu.school.subjects':"Asosiy fanlar: Matematika, Fizika, Informatika, O'zbek tili, Ingliz tili, Rus tili",'edu.it.title':'IT kurslari','edu.it.name':"IT o'quv markazi",'edu.it.period':'2024 — Hozirgacha','edu.it.subjects':'Python, HTML5, CSS3, JavaScript asoslari, Git, Web dizayn, Responsive Design','edu.poly.title':"Texnikum ta'limi",'edu.poly.name':'Politexnik texnikum','edu.poly.period':'2025 — Hozirgacha','edu.poly.subjects':"Axborot texnologiyalari, Dasturlash asoslari, Kompyuter tarmoqlari, Ma'lumotlar bazasi",'edu.softskills.title':"Shaxsiy ko'nikmalar",'sk.selflearn':"O'z-o'zini o'qitish",'sk.responsibility':"Mas'uliyat",'sk.teamwork':'Jamoa ishi','sk.problemsolving':'Muammolarni hal qilish','sk.creativity':'Ijodkorlik','sk.timemanagement':'Vaqtni boshqarish','sk.communication':'Muloqot','sk.adaptability':'Moslashuvchanlik','sk.attention':'Diqqat','sk.selfdevelopment':"O'zini rivojlantirish",'proj.title_html':"Loyi<span>halar</span>",'proj.p1.title':'Kalkulyator dasturi','proj.p1.desc':"Python tilida yaratilgan kalkulyator. Tkinter kutubxonasi bilan qulay GUI interfeysi.",'proj.p2.title':'Shaxsiy veb-sayt','proj.p2.desc':"HTML, CSS va JavaScript yordamida yaratilgan responsive shaxsiy veb-sayt.",'proj.p3.title':'Vazifalar boshqaruv tizimi','proj.p3.desc':"Python va SQLite yordamida yaratilgan vazifalar boshqaruv tizimi.",'proj.p4.title':'Math Cert Pro','proj.p4.desc':"Test uchun ilova — matematika sertifikati imtihoniga tayyorlanish platformasi. Foydalanuvchilar interaktiv testlarni yechib, natijalarini kuzatadi.",'proj.p5.title':'BekRobot — AI Bot','proj.p5.desc':"Telegram'da @BekRobot nomi bilan ishlaydigan AI bot. Savollarga javob berish, ma'lumot qidirish va vazifalarni avtomatlashtirish.",'proj.code':'Kod','proj.open_bot':"Botga o'tish",'skills.title_html':"Ko'ni<span>kmalar</span>",'skills.cat1':'Dasturlash tillari','skills.cat2':'Web texnologiyalar','skills.cat3':'Framework va kutubxonalar','skills.cat4':'Dasturlash asboblari','skills.cat5':"Ma'lumotlar bazasi",'skills.cat6':"Shaxsiy ko'nikmalar",'contact.title_html':"Alo<span>qa</span>",'contact.phone':'Telefon','contact.form.title':'Menga xabar yuboring','contact.form.name':"To'liq ism",'contact.form.name_ph':'Sizning ismingiz','contact.form.email':'Elektron pochta','contact.form.email_ph':'Email manzilingiz','contact.form.message':'Xabar','contact.form.message_ph':"Xabaringizni yozing...",'contact.form.send':'Yuborish','contact.form.success':"Xabaringiz yuborildi. Rahmat!"},
+en:{'nav.home':'Home','nav.about':'About','nav.education':'Education','nav.projects':'Projects','nav.skills':'Skills','nav.contact':'Contact','hero.status':'Currently learning & growing','hero.name':'Allamov Navrozbek','hero.role':'IT Student','hero.subtitle':'Python • HTML • CSS','hero.description':'Learning to build modern, minimalist, and fast web pages. My goal is clean code, user-friendly interfaces, and reliable results.','hero.cta_projects':'View Projects','hero.cta_contact':'Contact Me','stat.school':'School','stat.it':'IT Courses','stat.poly':'Polytechnic','about.title_html':'About <span>Me</span>','about.intro1':"I'm Allamov Navrozbek — an IT student learning Python, HTML and CSS through practical projects.",'about.intro2':'Currently attending school, IT courses, and Polytechnic College simultaneously. Passionate about programming.','about.intro3':'My goal: to become a professional developer and continuously grow in the IT field.','about.card1.title':'Learning Path','about.card1.text':'Gaining deep knowledge in IT and modern technologies. Becoming professional in web development.','about.card2.title':'Programming','about.card2.text':'Learning Python, working with algorithms. Creating modern web pages with HTML and CSS.','about.card3.title':'Goals','about.card3.text':'Becoming a professional developer, working on large projects and building a successful IT career.','about.card4.title':'Interests','about.card4.text':'Programming, web design, new technologies, reading and self-development.','edu.title_html':'Edu<span>cation</span>','edu.school.title':'School Education','edu.school.name':'Tashkent City School','edu.school.period':'2016 — 2025','edu.school.subjects':'Main subjects: Mathematics, Physics, Computer Science, Uzbek, English, Russian','edu.it.title':'IT Courses','edu.it.name':'IT Learning Center','edu.it.period':'2024 — Present','edu.it.subjects':'Python, HTML5, CSS3, JavaScript basics, Git, Web Design, Responsive Design','edu.poly.title':'Polytechnic Education','edu.poly.name':'Polytechnic College','edu.poly.period':'2025 — Present','edu.poly.subjects':'Information Technologies, Programming, Computer Networks, Database, Web Technologies','edu.softskills.title':'Soft Skills','sk.selflearn':'Self-learning','sk.responsibility':'Responsibility','sk.teamwork':'Teamwork','sk.problemsolving':'Problem Solving','sk.creativity':'Creativity','sk.timemanagement':'Time Management','sk.communication':'Communication','sk.adaptability':'Adaptability','sk.attention':'Attention to Detail','sk.selfdevelopment':'Self-Development','proj.title_html':'Pro<span>jects</span>','proj.p1.title':'Calculator App','proj.p1.desc':'Python calculator with GUI built using Tkinter. Supports all basic arithmetic operations.','proj.p2.title':'Personal Website','proj.p2.desc':'Responsive personal website built with HTML, CSS and JavaScript with smooth animations.','proj.p3.title':'Task Manager','proj.p3.desc':'Task management system built with Python and SQLite for persistent task storage.','proj.p4.title':'Math Cert Pro','proj.p4.desc':'Test preparation app — a platform for math certification exam prep. Interactive questions with result tracking.','proj.p5.title':'BekRobot — AI Bot','proj.p5.desc':'AI-powered Telegram bot @BekRobot. Answers questions, searches info, and automates everyday tasks.','proj.code':'Code','proj.open_bot':'Open Bot','skills.title_html':'My <span>Skills</span>','skills.cat1':'Programming Languages','skills.cat2':'Web Technologies','skills.cat3':'Frameworks & Libraries','skills.cat4':'Dev Tools','skills.cat5':'Databases','skills.cat6':'Soft Skills','contact.title_html':'Con<span>tact</span>','contact.phone':'Phone','contact.form.title':'Send Me a Message','contact.form.name':'Full Name','contact.form.name_ph':'Your name','contact.form.email':'Email Address','contact.form.email_ph':'Your email','contact.form.message':'Message','contact.form.message_ph':'Write your message...','contact.form.send':'Send Message','contact.form.success':'Your message has been sent. Thank you!'},
+ru:{'nav.home':'Главная','nav.about':'Обо мне','nav.education':'Образование','nav.projects':'Проекты','nav.skills':'Навыки','nav.contact':'Контакты','hero.status':'Учусь и развиваюсь','hero.name':'Алламов Навруз','hero.role':'IT студент','hero.subtitle':'Python • HTML • CSS','hero.description':'Изучаю создание современных и быстрых веб-сайтов. Моя цель — чистый код, удобный интерфейс и надёжный результат.','hero.cta_projects':'Смотреть проекты','hero.cta_contact':'Связаться','stat.school':'Школа','stat.it':'IT курсы','stat.poly':'Политехникум','about.title_html':'Обо <span>мне</span>','about.intro1':'Я Алламов Навруз — студент IT. Изучаю Python, HTML и CSS, создаю практические проекты.','about.intro2':'Одновременно учусь в школе, посещаю IT курсы и Политехнический колледж.','about.intro3':'Моя цель: стать профессиональным разработчиком и постоянно обновлять знания.','about.card1.title':'Направление обучения','about.card1.text':'Получение глубоких знаний в IT. Профессиональное развитие в веб-разработке.','about.card2.title':'Программирование','about.card2.text':'Изучаю Python, работаю с алгоритмами. Создаю веб-страницы с HTML и CSS.','about.card3.title':'Цели','about.card3.text':'Стать профессиональным разработчиком и построить успешную карьеру в IT.','about.card4.title':'Интересы','about.card4.text':'Программирование, веб-дизайн, новые технологии и инновации в IT.','edu.title_html':'Обра<span>зование</span>','edu.school.title':'Школьное образование','edu.school.name':'Школа г. Ташкента','edu.school.period':'2016 — 2025','edu.school.subjects':'Математика, Физика, Информатика, Узбекский, Английский, Русский','edu.it.title':'IT Курсы','edu.it.name':'IT Учебный центр','edu.it.period':'2024 — По н.в.','edu.it.subjects':'Python, HTML5, CSS3, JavaScript, Git, Веб-дизайн, Адаптивный дизайн','edu.poly.title':'Политехн. образование','edu.poly.name':'Политехнический колледж','edu.poly.period':'2025 — По н.в.','edu.poly.subjects':'IT, Программирование, Компьютерные сети, Базы данных, Веб-технологии','edu.softskills.title':'Личные навыки','sk.selflearn':'Самообучение','sk.responsibility':'Ответственность','sk.teamwork':'Командная работа','sk.problemsolving':'Решение проблем','sk.creativity':'Креативность','sk.timemanagement':'Тайм-менеджмент','sk.communication':'Коммуникация','sk.adaptability':'Адаптивность','sk.attention':'Внимательность','sk.selfdevelopment':'Саморазвитие','proj.title_html':'Про<span>екты</span>','proj.p1.title':'Калькулятор','proj.p1.desc':'Приложение-калькулятор на Python с графическим интерфейсом Tkinter.','proj.p2.title':'Личный сайт','proj.p2.desc':'Адаптивный сайт на HTML, CSS и JavaScript с плавными анимациями.','proj.p3.title':'Менеджер задач','proj.p3.desc':'Система управления задачами на Python и SQLite.','proj.p4.title':'Math Cert Pro','proj.p4.desc':'Приложение для подготовки к экзамену по сертификату математики. Интерактивные тесты с отслеживанием результатов.','proj.p5.title':'BekRobot — AI Бот','proj.p5.desc':'AI-бот @BekRobot в Telegram. Отвечает на вопросы, ищет информацию и автоматизирует задачи.','proj.code':'Код','proj.open_bot':'Открыть бота','skills.title_html':'На<span>выки</span>','skills.cat1':'Языки программирования','skills.cat2':'Веб-технологии','skills.cat3':'Фреймворки и библиотеки','skills.cat4':'Инструменты','skills.cat5':'Базы данных','skills.cat6':'Личные качества','contact.title_html':'Кон<span>такты</span>','contact.phone':'Телефон','contact.form.title':'Написать мне','contact.form.name':'Полное имя','contact.form.name_ph':'Ваше имя','contact.form.email':'Электронная почта','contact.form.email_ph':'Ваш email','contact.form.message':'Сообщение','contact.form.message_ph':'Напишите сообщение...','contact.form.send':'Отправить','contact.form.success':'Ваше сообщение отправлено. Спасибо!'}
+};
 
-function toggleMobileMenu() {
-    document.getElementById('navMenu').classList.toggle('active');
+let CL=localStorage.getItem('language')||'uz';
+function cl2(l){
+    CL=l;localStorage.setItem('language',l);
+    document.documentElement.lang=l;
+    document.getElementById('cl').textContent=l.toUpperCase();
+    document.querySelectorAll('.lo').forEach(o=>o.classList.toggle('ac',o.getAttribute('data-lang')===l));
+    document.getElementById('ld').classList.remove('on');
+    const d=T[l]||T.uz;
+    document.querySelectorAll('[data-i18n]').forEach(e=>{const v=d[e.getAttribute('data-i18n')];if(v!==undefined)e.textContent=v});
+    document.querySelectorAll('[data-i18n-html]').forEach(e=>{const v=d[e.getAttribute('data-i18n-html')];if(v!==undefined)e.innerHTML=v});
+    document.querySelectorAll('[data-i18n-ph]').forEach(e=>{const v=d[e.getAttribute('data-i18n-ph')];if(v!==undefined)e.placeholder=v});
 }
+function tld(){document.getElementById('ld').classList.toggle('on')}
 
-function updateActiveLink() {
-    const sections = ['home','about','education','projects','skills','contact'];
-    const links = document.querySelectorAll('.nav-link');
-    sections.forEach((id, i) => {
-        const s = document.getElementById(id);
-        if (s) {
-            const r = s.getBoundingClientRect();
-            if (r.top <= 120 && r.bottom >= 120) {
-                links.forEach(l => l.classList.remove('active'));
-                if (links[i]) links[i].classList.add('active');
-            }
-        }
-    });
+function tt(){
+    const lt=document.documentElement.getAttribute('data-theme')==='light';
+    document.documentElement.setAttribute('data-theme',lt?'dark':'light');
+    document.getElementById('ti').className=lt?'fas fa-sun':'fas fa-moon';
+    localStorage.setItem('theme',lt?'dark':'light');
 }
+(function(){
+    const s=localStorage.getItem('theme')||'dark';
+    document.documentElement.setAttribute('data-theme',s);
+    document.getElementById('ti').className=s==='dark'?'fas fa-sun':'fas fa-moon';
+})();
 
-/* ═══════════════════════════════════════════
-   SCROLL EVENTS
-═══════════════════════════════════════════ */
-window.addEventListener('scroll', () => {
-    const y = window.pageYOffset;
-    document.getElementById('scrollToTop').classList.toggle('visible', y > 300);
-    document.getElementById('navbar').classList.toggle('scrolled', y > 80);
-    updateActiveLink();
+function go(id){const e=document.getElementById(id);if(e){e.scrollIntoView({behavior:'smooth'});document.getElementById('nm').classList.remove('on')}}
+function tmm(){document.getElementById('nm').classList.toggle('on')}
+function ual(){
+    const ids=['home','about','education','projects','skills','contact'];
+    const lk=document.querySelectorAll('.nl');
+    ids.forEach((id,i)=>{const s=document.getElementById(id);if(!s)return;const r=s.getBoundingClientRect();if(r.top<=120&&r.bottom>=120){lk.forEach(l=>l.classList.remove('ac'));if(lk[i])lk[i].classList.add('ac')}});
+}
+window.addEventListener('scroll',()=>{
+    const y=pageYOffset;
+    document.getElementById('stt').classList.toggle('v',y>300);
+    document.getElementById('nb').classList.toggle('sc',y>80);
+    ual();
 });
-
-/* ═══════════════════════════════════════════
-   CONTACT FORM
-═══════════════════════════════════════════ */
-function handleFormSubmit(e) {
+function fs2(e){
     e.preventDefault();
-    const msg = document.getElementById('formMessage');
-    const dict = translations[currentLanguage] || translations.uz;
-    msg.textContent = dict['contact.form.success'];
-    msg.className = 'form-message success';
-    msg.style.display = 'block';
-    setTimeout(() => { msg.style.display = 'none'; }, 5000);
-    e.target.reset();
+    const m=document.getElementById('fm'),d=T[CL]||T.uz;
+    m.textContent=d['contact.form.success'];m.className='fm ok';m.style.display='block';
+    setTimeout(()=>m.style.display='none',5000);e.target.reset();
 }
-
-/* ═══════════════════════════════════════════
-   UNIFIED DOCUMENT CLICK (single listener)
-═══════════════════════════════════════════ */
-document.addEventListener('click', e => {
-    // Close language dropdown
-    const switcher = document.querySelector('.language-switcher');
-    if (switcher && !switcher.contains(e.target)) {
-        document.getElementById('languageDropdown').classList.remove('active');
-    }
-    // Close mobile nav
-    const nav = document.getElementById('navbar');
-    const navMenu = document.getElementById('navMenu');
-    if (nav && navMenu && !nav.contains(e.target)) {
-        navMenu.classList.remove('active');
-    }
+document.addEventListener('click',e=>{
+    const sw=document.querySelector('.ls');if(sw&&!sw.contains(e.target))document.getElementById('ld').classList.remove('on');
+    const nb=document.getElementById('nb'),nm=document.getElementById('nm');if(nb&&nm&&!nb.contains(e.target))nm.classList.remove('on');
 });
-
-/* ═══════════════════════════════════════════
-   INIT
-═══════════════════════════════════════════ */
-document.addEventListener('DOMContentLoaded', () => {
-    document.getElementById('year').textContent = new Date().getFullYear();
-    changeLanguage(currentLanguage);
-});
+document.addEventListener('DOMContentLoaded',()=>{document.getElementById('yr').textContent=new Date().getFullYear();cl2(CL)});
 </script>
 </body>
 </html>
+
